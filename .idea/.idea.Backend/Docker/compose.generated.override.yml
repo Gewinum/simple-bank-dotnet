@@ -1,0 +1,20 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  api:
+    build:
+      context: "/home/gewinum/Documents/GitHub/simple-bank-dotnet"
+      dockerfile: "Simplebank.API/Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net9.0/Simplebank.API.dll"
+    environment:
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "simplebank.api:dev"
+    ports: []
+    volumes:
+    - "/home/gewinum/Documents/GitHub/simple-bank-dotnet/Simplebank.API:/app:rw"
+    - "/home/gewinum/Documents/GitHub/simple-bank-dotnet:/src:rw"
+    - "/home/gewinum/.nuget/packages:/home/app/.nuget/packages"
+    working_dir: "/app"
