@@ -1,0 +1,39 @@
+﻿services:
+  api:
+    image: simplebank.api
+    depends_on:
+      bank-mssql:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: "Server=bank-mssql;Database=simplebank;User=sa;Password=${MSSQL_SA_PASSWORD:-Password123};TrustServerCertificate=true"
+    ports:
+      - "8080:8080"
+    networks:
+      - mssql
+    build:
+      context: .
+      dockerfile: Simplebank.API/Dockerfile
+  bank-mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+        ACCEPT_EULA: y
+        MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Password123}
+        MSSQL_IP_ADDRESS: 0.0.0.0
+        MSSQL_PID: Developer
+    ports:
+      - "1433:1433"
+    networks:
+        - mssql
+    volumes:
+        - ./db-data:/var/opt/mssql
+    healthcheck:
+      # -C option tells sqlcmd to trust server's certificate
+      test: "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ${MSSQL_SA_PASSWORD:-Password123} -C -Q 'SELECT 1' || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  mssql:
+    driver: bridge

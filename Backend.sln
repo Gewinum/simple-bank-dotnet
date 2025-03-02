@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simplebank.API", "Simplebank.API\Simplebank.API.csproj", "{EF8947E1-71FF-45C4-9391-CE3F30C33CD8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E36E83BD-B0B5-40FC-ADBB-9D623715D54A}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+		Makefile = Makefile
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simplebank.Domain", "Simplebank.Domain\Simplebank.Domain.csproj", "{34363D2D-F702-46F7-8BC9-B89DFF9E8C84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simplebank.Application", "Simplebank.Application\Simplebank.Application.csproj", "{FEF65E1C-35EF-44D1-A841-D34C5C3709EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simplebank.Infrastructure", "Simplebank.Infrastructure\Simplebank.Infrastructure.csproj", "{D9AEFEA1-9440-41EC-8BBF-A51D729B72D6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EF8947E1-71FF-45C4-9391-CE3F30C33CD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF8947E1-71FF-45C4-9391-CE3F30C33CD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF8947E1-71FF-45C4-9391-CE3F30C33CD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF8947E1-71FF-45C4-9391-CE3F30C33CD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34363D2D-F702-46F7-8BC9-B89DFF9E8C84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34363D2D-F702-46F7-8BC9-B89DFF9E8C84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34363D2D-F702-46F7-8BC9-B89DFF9E8C84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34363D2D-F702-46F7-8BC9-B89DFF9E8C84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEF65E1C-35EF-44D1-A841-D34C5C3709EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEF65E1C-35EF-44D1-A841-D34C5C3709EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEF65E1C-35EF-44D1-A841-D34C5C3709EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEF65E1C-35EF-44D1-A841-D34C5C3709EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9AEFEA1-9440-41EC-8BBF-A51D729B72D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9AEFEA1-9440-41EC-8BBF-A51D729B72D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9AEFEA1-9440-41EC-8BBF-A51D729B72D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9AEFEA1-9440-41EC-8BBF-A51D729B72D6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+	EndGlobalSection
+EndGlobal
