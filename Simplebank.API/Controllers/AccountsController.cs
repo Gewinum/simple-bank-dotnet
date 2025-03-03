@@ -42,7 +42,7 @@ public class AccountsController : ControllerBase
         }
     }
     
-    [HttpPut]
+    [HttpPost]
     [Route("balance")]
     public async Task<ActionResult> AddBalanceAsync([FromBody] ChangeBalanceRequest request, IAccountsService accountsService)
     {
@@ -54,25 +54,6 @@ public class AccountsController : ControllerBase
         catch (AccountNotFoundException e)
         {
             return NotFound(e.Message);
-        }
-    }
-    
-    [HttpDelete]
-    [Route("balance")]
-    public async Task<ActionResult> SubtractBalanceAsync([FromBody] ChangeBalanceRequest request, IAccountsService accountsService)
-    {
-        try
-        {
-            await accountsService.SubtractBalanceAsync(request.AccountId, request.Amount);
-            return Ok();
-        }
-        catch (AccountNotFoundException e)
-        {
-            return NotFound(e.Message);
-        }
-        catch (InsufficientBalanceException e)
-        {
-            return BadRequest(e.Message);
         }
     }
 }
