@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Simplebank.Application.Services;
+using Simplebank.Domain.Interfaces.Database;
 using Simplebank.Domain.Interfaces.Repositories;
 using Simplebank.Domain.Interfaces.Services;
 using Simplebank.Infrastructure.Database;
@@ -22,10 +23,14 @@ public class Program
     {
         services.AddAuthorization();
         services.AddOpenApi();
+        
+        // Database
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseSqlServer(configuration.GetConnectionString("Default"));
         });
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
         // Repositories
         services.AddScoped<IAccountsRepository, AccountsRepository>();
         

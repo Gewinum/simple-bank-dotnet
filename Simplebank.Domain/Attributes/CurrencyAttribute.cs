@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Simplebank.Domain.Constants;
 
 namespace Simplebank.Domain.Attributes;
 
@@ -11,8 +12,6 @@ public class CurrencyAttribute : ValidationAttribute
             return new ValidationResult("Currency must be a string");
         }
         
-        var allowedCurrencies = new[] {"USD", "EUR", "GBP", "JPY", "CNY"};
-
-        return !allowedCurrencies.Contains(currency) ? new ValidationResult("Currency is not allowed") : ValidationResult.Success;
+        return !CurrencyConstants.Currencies.Contains(currency) ? new ValidationResult("Currency is not allowed") : ValidationResult.Success;
     }
 }
