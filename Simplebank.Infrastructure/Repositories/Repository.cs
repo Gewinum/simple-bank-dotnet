@@ -1,9 +1,11 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using Simplebank.Domain.Interfaces.Models;
 using Simplebank.Domain.Interfaces.Repositories;
 using Simplebank.Infrastructure.Database;
+using Simplebank.Infrastructure.Exceptions;
 
 namespace Simplebank.Infrastructure.Repositories;
 
@@ -17,19 +19,37 @@ public abstract class Repository<T>(ApplicationDbContext context) : IRepository<
         return await dbSet.FindAsync(id);
     }
 
-    public async Task<EntityEntry<T>?> AddAsync(T entity)
+    public async Task<T?> AddAsync(T entity)
     {
         if (entity is IModel model)
         {
             model.CreatedAt = DateTime.UtcNow;
             model.UpdatedAt = DateTime.UtcNow;
         }
-        
-        var entityEntry = await dbSet.AddAsync(entity);
-        return entityEntry;
+
+        await dbSet.AddAsync(entity);
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateException e)
+        {
+            if (e.InnerException is not SqlException innerException)
+            {
+                throw e.InnerException ?? e;
+            }
+            
+            if (innerException.Number == 2601)
+            {
+                throw new DuplicateKeysException();
+            }
+
+            throw e.InnerException ?? e;
+        }
+        return entity;
     }
     
-    public void Update(T entity)
+    public async Task UpdateAsync(T entity)
     {
         if (entity is IModel model)
         {
@@ -37,20 +57,12 @@ public abstract class Repository<T>(ApplicationDbContext context) : IRepository<
         }
         
         dbSet.Update(entity);
-    }
-
-    public EntityEntry<T>? Delete(T entity)
-    {
-        return dbSet.Remove(entity);
-    }
-    
-    public async Task SaveChangesAsync()
-    {
         await context.SaveChangesAsync();
     }
-    
-    public async Task<IDbContextTransaction> BeginTransactionAsync()
+
+    public async Task DeleteAsync(T entity)
     {
-        return await context.Database.BeginTransactionAsync();
+        dbSet.Remove(entity);
+        await context.SaveChangesAsync();
     }
 }

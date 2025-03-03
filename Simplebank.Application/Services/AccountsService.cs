@@ -3,18 +3,22 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Simplebank.Application.Exceptions.Accounts;
 using Simplebank.Domain.Database.Models;
+using Simplebank.Domain.Interfaces.Database;
 using Simplebank.Domain.Interfaces.Repositories;
 using Simplebank.Domain.Interfaces.Services;
+using Simplebank.Infrastructure.Exceptions;
 
 namespace Simplebank.Application.Services;
 
 public class AccountsService : IAccountsService
 {
     private readonly IAccountsRepository _accountsRepository;
+    private readonly IUnitOfWork _unitOfWork;
     
-    public AccountsService(IAccountsRepository accountsRepository, ILogger<AccountsService> logger)
+    public AccountsService(IAccountsRepository accountsRepository, IUnitOfWork unitOfWork)
     {
         _accountsRepository = accountsRepository;
+        _unitOfWork = unitOfWork;
     }
     
     public async Task<Account> GetAccountAsync(Guid id)
@@ -29,37 +33,33 @@ public class AccountsService : IAccountsService
     
     public async Task<Account?> CreateAccountAsync(string owner, string currency)
     {
-        var transaction = await _accountsRepository.BeginTransactionAsync();
+        await _unitOfWork.BeginTransactionAsync();
         try
         {
-            var entityEntry = await _accountsRepository.AddAsync(new Account
+            var account = await _accountsRepository.AddAsync(new Account
             {
                 Owner = owner,
                 Balance = 0,
                 Currency = currency
             });
-            await _accountsRepository.SaveChangesAsync();
-            await transaction.CommitAsync();
-            return entityEntry?.Entity;
+            await _unitOfWork.CommitTransactionAsync();
+            return account;
         }
-        catch (DbUpdateException e)
+        catch (DuplicateKeysException)
         {
-            await transaction.RollbackAsync();
-            if (e.InnerException is SqlException innerException)
-            {
-                if (innerException.Number == 2601)
-                {
-                    throw new AccountAlreadyExistsException(owner, currency);
-                }
-            }
-
+            await _unitOfWork.RollbackTransactionAsync();
+            throw new AccountAlreadyExistsException(owner, currency);
+        }
+        catch (Exception e)
+        {
+            await _unitOfWork.RollbackTransactionAsync();
             throw e.InnerException ?? e;
         }
     }
     
     public async Task AddBalanceAsync(Guid id, decimal amount)
     {
-        var transaction = await _accountsRepository.BeginTransactionAsync();
+        await _unitOfWork.BeginTransactionAsync();
         try
         {
             var account = await _accountsRepository.GetByIdAsync(id);
@@ -69,20 +69,19 @@ public class AccountsService : IAccountsService
             }
 
             account.Balance += amount;
-            _accountsRepository.Update(account);
-            await _accountsRepository.SaveChangesAsync();
-            await transaction.CommitAsync();
+            await _accountsRepository.UpdateAsync(account);
+            await _unitOfWork.CommitTransactionAsync();
         }
-        catch (DbUpdateException e)
+        catch (Exception e)
         {
-            await transaction.RollbackAsync();
+            await _unitOfWork.RollbackTransactionAsync();
             throw e.InnerException ?? e;
         }
     }
     
     public async Task SubtractBalanceAsync(Guid id, decimal amount)
     {
-        var transaction = await _accountsRepository.BeginTransactionAsync();
+        await _unitOfWork.BeginTransactionAsync();
         try
         {
             var account = await _accountsRepository.GetByIdAsync(id);
@@ -97,13 +96,12 @@ public class AccountsService : IAccountsService
             }
 
             account.Balance -= amount;
-            _accountsRepository.Update(account);
-            await _accountsRepository.SaveChangesAsync();
-            await transaction.CommitAsync();
+            await _accountsRepository.UpdateAsync(account);
+            await _unitOfWork.CommitTransactionAsync();
         }
-        catch (DbUpdateException e)
+        catch (Exception e)
         {
-            await transaction.RollbackAsync();
+            await _unitOfWork.RollbackTransactionAsync();
             throw e.InnerException ?? e;
         }
     }
