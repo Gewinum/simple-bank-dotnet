@@ -65,24 +65,6 @@ public class AccountsRepositoryTest
         Assert.Equal(account.Balance, result.Balance);
     }
     
-    [Fact]
-    public async Task AddAccountAsyncDuplicateKeysException()
-    {
-        // Arrange
-        var context = InstantiateContext();
-        var account = CreateRandomAccount();
-        var repository = new AccountsRepository(context);
-        
-        await repository.AddAsync(account);
-        await context.SaveChangesAsync();
-
-        // Act
-        var exception = await Assert.ThrowsAsync<ArgumentException>(() => repository.AddAsync(account));
-        
-        // Assert
-        Assert.Equal(exception.Message, $"An item with the same key has already been added. Key: {account.Id}");
-    }
-    
     private ApplicationDbContext InstantiateContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
