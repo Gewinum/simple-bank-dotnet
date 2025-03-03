@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Moq;
-using Moq.EntityFrameworkCore;
 using Simplebank.Domain.Constants;
 using Simplebank.Domain.Database.Models;
 using Simplebank.Infrastructure.Database;
