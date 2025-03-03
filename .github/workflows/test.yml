@@ -30,9 +30,15 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 9.0.x
+      - name: Install dotnet ef
+        run: dotnet tool install --global dotnet-ef
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
         run: dotnet build --no-restore
+      - name: Create database
+        run: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P Password123 -Q "CREATE DATABASE simplebank"
+      - name: Update database
+        run: make migratedb
       - name: Test
         run: dotnet test --no-build --verbosity normal
