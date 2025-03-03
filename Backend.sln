@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simplebank.Application.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simplebank.Infrastructure.Tests", "Simplebank.Infrastructure.Tests\Simplebank.Infrastructure.Tests.csproj", "{0F71EF4E-E125-4B6A-9EAA-F0C57160BB80}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simplebank.API.Tests", "Simplebank.API.Tests\Simplebank.API.Tests.csproj", "{71D1560C-6DF9-4847-A15D-E4834152A20D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{0F71EF4E-E125-4B6A-9EAA-F0C57160BB80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0F71EF4E-E125-4B6A-9EAA-F0C57160BB80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0F71EF4E-E125-4B6A-9EAA-F0C57160BB80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71D1560C-6DF9-4847-A15D-E4834152A20D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71D1560C-6DF9-4847-A15D-E4834152A20D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71D1560C-6DF9-4847-A15D-E4834152A20D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71D1560C-6DF9-4847-A15D-E4834152A20D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
