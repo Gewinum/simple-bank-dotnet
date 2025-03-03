@@ -6,7 +6,7 @@ namespace Simplebank.API.Requests.Accounts;
 public class CreateAccountRequest
 {
     [MinLength(3)]
-    [MaxLength(15)]
+    [MaxLength(100)]
     public required string Owner { get; set; }
     
     [Currency]
