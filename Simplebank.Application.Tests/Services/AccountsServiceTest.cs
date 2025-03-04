@@ -22,9 +22,10 @@ public class AccountsServiceTest
         // Arrange
         var account = CreateRandomAccount();
         var accountsRepositoryMock = new Mock<IAccountsRepository>();
+        var entriesRepositoryMock = new Mock<IEntriesRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
         accountsRepositoryMock.Setup(r => r.GetByIdAsync(account.Id)).ReturnsAsync(account);
-        var accountsService = new AccountsService(accountsRepositoryMock.Object, unitOfWorkMock.Object);
+        var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
         
         // Act
         var result = await accountsService.GetAccountAsync(account.Id);
@@ -39,9 +40,10 @@ public class AccountsServiceTest
     {
         // Arrange
         var accountsRepositoryMock = new Mock<IAccountsRepository>();
+        var entriesRepositoryMock = new Mock<IEntriesRepository>();
         accountsRepositoryMock.Setup(r => r.GetByIdAsync(It.IsAny<Guid>())).ReturnsAsync(null as Account);
         var unitOfWorkMock = new Mock<IUnitOfWork>();
-        var accountsService = new AccountsService(accountsRepositoryMock.Object, unitOfWorkMock.Object);
+        var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
 
         // Act
         var exception = await Assert.ThrowsAsync<AccountNotFoundException>(() => accountsService.GetAccountAsync(Guid.NewGuid()));
@@ -57,10 +59,11 @@ public class AccountsServiceTest
         var account = CreateRandomAccount();
         account.Balance = 0;
         var accountsRepositoryMock = new Mock<IAccountsRepository>();
+        var entriesRepositoryMock = new Mock<IEntriesRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
 
         accountsRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Account>())).ReturnsAsync(account);
-        var accountsService = new AccountsService(accountsRepositoryMock.Object, unitOfWorkMock.Object);
+        var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
 
         // Act
         var result = await accountsService.CreateAccountAsync(account.Owner, account.Currency);
@@ -80,10 +83,11 @@ public class AccountsServiceTest
         // Arrange
         var account = CreateRandomAccount();
         var accountsRepositoryMock = new Mock<IAccountsRepository>();
+        var entriesRepositoryMock = new Mock<IEntriesRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
 
         accountsRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Account>())).ThrowsAsync(new DuplicateKeysException());
-        var accountsService = new AccountsService(accountsRepositoryMock.Object, unitOfWorkMock.Object);
+        var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
 
         // Act
         var exception = await Assert.ThrowsAsync<AccountAlreadyExistsException>(() => accountsService.CreateAccountAsync(account.Owner, account.Currency));
@@ -103,18 +107,21 @@ public class AccountsServiceTest
         var account = CreateRandomAccount();
         var initialBalance = account.Balance;
         var accountsRepositoryMock = new Mock<IAccountsRepository>();
+        var entriesRepositoryMock = new Mock<IEntriesRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
+        var amount = 10;
 
         accountsRepositoryMock.Setup(r => r.GetByIdAsync(account.Id)).ReturnsAsync(account);
-        var accountsService = new AccountsService(accountsRepositoryMock.Object, unitOfWorkMock.Object);
+        var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
         
         // Act
-        await accountsService.AddBalanceAsync(account.Id, 10);
+        await accountsService.AddBalanceAsync(account.Id, amount);
         
         // Assert
-        Assert.Equal(initialBalance + 10, account.Balance);
+        Assert.Equal(initialBalance + amount, account.Balance);
         accountsRepositoryMock.Verify(r => r.GetByIdAsync(account.Id), Times.Once);
         accountsRepositoryMock.Verify(r => r.UpdateAsync(account), Times.Once);
+        entriesRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Entry>()), Times.Once);
         unitOfWorkMock.Verify(u => u.BeginTransactionAsync(), Times.Once);
         unitOfWorkMock.Verify(u => u.CommitTransactionAsync(), Times.Once);
     }
@@ -125,10 +132,11 @@ public class AccountsServiceTest
         // Arrange
         var account = CreateRandomAccount();
         var accountsRepositoryMock = new Mock<IAccountsRepository>();
+        var entriesRepositoryMock = new Mock<IEntriesRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
 
         accountsRepositoryMock.Setup(r => r.GetByIdAsync(account.Id)).ReturnsAsync(null as Account);
-        var accountsService = new AccountsService(accountsRepositoryMock.Object, unitOfWorkMock.Object);
+        var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
         
         // Act
         await Assert.ThrowsAsync<AccountNotFoundException>(() => accountsService.AddBalanceAsync(account.Id, 10));
@@ -136,6 +144,7 @@ public class AccountsServiceTest
         // Assert
         accountsRepositoryMock.Verify(r => r.GetByIdAsync(account.Id), Times.Once);
         accountsRepositoryMock.Verify(r => r.UpdateAsync(account), Times.Never);
+        entriesRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Entry>()), Times.Never);
         unitOfWorkMock.Verify(u => u.BeginTransactionAsync(), Times.Once);
         unitOfWorkMock.Verify(u => u.RollbackTransactionAsync(), Times.Once);
     }
