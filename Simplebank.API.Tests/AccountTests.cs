@@ -91,6 +91,7 @@ public class AccountTests
         createResponse.EnsureSuccessStatusCode();
         
         var account = await createResponse.Content.ReadFromJsonAsync<Account>();
+        Assert.NotNull(account);
         
         var addBalanceRequest = new ChangeBalanceRequest
         {

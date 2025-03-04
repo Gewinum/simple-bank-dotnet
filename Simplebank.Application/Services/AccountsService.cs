@@ -78,31 +78,4 @@ public class AccountsService : IAccountsService
             throw e.InnerException ?? e;
         }
     }
-    
-    public async Task SubtractBalanceAsync(Guid id, decimal amount)
-    {
-        await _unitOfWork.BeginTransactionAsync();
-        try
-        {
-            var account = await _accountsRepository.GetByIdAsync(id);
-            if (account == null)
-            {
-                throw new AccountNotFoundException(id);
-            }
-            
-            if (account.Balance < amount)
-            {
-                throw new InsufficientBalanceException(id, amount);
-            }
-
-            account.Balance -= amount;
-            await _accountsRepository.UpdateAsync(account);
-            await _unitOfWork.CommitTransactionAsync();
-        }
-        catch (Exception e)
-        {
-            await _unitOfWork.RollbackTransactionAsync();
-            throw e.InnerException ?? e;
-        }
-    }
 }

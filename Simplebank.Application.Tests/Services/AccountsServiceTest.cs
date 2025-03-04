@@ -140,50 +140,6 @@ public class AccountsServiceTest
         unitOfWorkMock.Verify(u => u.RollbackTransactionAsync(), Times.Once);
     }
     
-    [Fact]
-    public async Task SubtractBalanceSuccessTest()
-    {
-        // Arrange
-        var account = CreateRandomAccount();
-        var initialBalance = account.Balance;
-        var accountsRepositoryMock = new Mock<IAccountsRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-        accountsRepositoryMock.Setup(r => r.GetByIdAsync(account.Id)).ReturnsAsync(account);
-        var accountsService = new AccountsService(accountsRepositoryMock.Object, unitOfWorkMock.Object);
-        
-        // Act
-        await accountsService.SubtractBalanceAsync(account.Id, 10);
-        
-        // Assert
-        Assert.Equal(initialBalance - 10, account.Balance);
-        accountsRepositoryMock.Verify(r => r.GetByIdAsync(account.Id), Times.Once);
-        accountsRepositoryMock.Verify(r => r.UpdateAsync(account), Times.Once);
-        unitOfWorkMock.Verify(u => u.BeginTransactionAsync(), Times.Once);
-        unitOfWorkMock.Verify(u => u.CommitTransactionAsync(), Times.Once);
-    }
-
-    [Fact]
-    public async Task SubtractBalanceAccountNotFoundTest()
-    {
-        // Arrange
-        var account = CreateRandomAccount();
-        var accountsRepositoryMock = new Mock<IAccountsRepository>();
-        var unitOfWorkMock = new Mock<IUnitOfWork>();
-
-        accountsRepositoryMock.Setup(r => r.GetByIdAsync(account.Id)).ReturnsAsync(null as Account);
-        var accountsService = new AccountsService(accountsRepositoryMock.Object, unitOfWorkMock.Object);
-        
-        // Act
-        await Assert.ThrowsAsync<AccountNotFoundException>(() => accountsService.SubtractBalanceAsync(account.Id, 10));
-        
-        // Assert
-        accountsRepositoryMock.Verify(r => r.GetByIdAsync(account.Id), Times.Once);
-        accountsRepositoryMock.Verify(r => r.UpdateAsync(account), Times.Never);
-        unitOfWorkMock.Verify(u => u.BeginTransactionAsync(), Times.Once);
-        unitOfWorkMock.Verify(u => u.RollbackTransactionAsync(), Times.Once);
-    }
-    
     private Account CreateRandomAccount()
     {
         var randomCurrency = CurrencyConstants.Currencies[new Random().Next(CurrencyConstants.Currencies.Length)];

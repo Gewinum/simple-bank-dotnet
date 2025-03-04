@@ -9,6 +9,4 @@ public interface IAccountsService
     Task<Account?> CreateAccountAsync(string owner, string currency);
     
     Task AddBalanceAsync(Guid id, decimal amount);
-    
-    Task SubtractBalanceAsync(Guid id, decimal amount);
 }
