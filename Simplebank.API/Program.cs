@@ -33,9 +33,11 @@ public class Program
         
         // Repositories
         services.AddScoped<IAccountsRepository, AccountsRepository>();
+        services.AddScoped<IEntriesRepository, EntriesRepository>();
         
         //Services
         services.AddScoped<IAccountsService, AccountsService>();
+        services.AddScoped<IEntriesService, EntriesService>();
         
         services.AddControllers();
     }

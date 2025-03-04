@@ -13,11 +13,13 @@ namespace Simplebank.Application.Services;
 public class AccountsService : IAccountsService
 {
     private readonly IAccountsRepository _accountsRepository;
+    private readonly IEntriesRepository _entriesRepository;
     private readonly IUnitOfWork _unitOfWork;
     
-    public AccountsService(IAccountsRepository accountsRepository, IUnitOfWork unitOfWork)
+    public AccountsService(IAccountsRepository accountsRepository, IEntriesRepository entriesRepository, IUnitOfWork unitOfWork)
     {
         _accountsRepository = accountsRepository;
+        _entriesRepository = entriesRepository;
         _unitOfWork = unitOfWork;
     }
     
@@ -67,6 +69,13 @@ public class AccountsService : IAccountsService
             {
                 throw new AccountNotFoundException(id);
             }
+
+            await _entriesRepository.AddAsync(new Entry
+            {
+                AccountId = account.Id,
+                Amount = amount,
+                Description = "Balance modification from API"
+            });
 
             account.Balance += amount;
             await _accountsRepository.UpdateAsync(account);

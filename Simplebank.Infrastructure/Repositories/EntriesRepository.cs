@@ -1,0 +1,23 @@
+using Microsoft.EntityFrameworkCore;
+using Simplebank.Domain.Database.Models;
+using Simplebank.Domain.Interfaces.Repositories;
+using Simplebank.Infrastructure.Database;
+using Simplebank.Infrastructure.Repositories;
+
+namespace Simplebank.Infrastructure.Repositories;
+
+public class EntriesRepository : Repository<Entry>, IEntriesRepository
+{
+    public EntriesRepository(ApplicationDbContext context) : base(context)
+    {
+    }
+
+    public async Task<IEnumerable<Entry>> GetEntriesAsync(Guid accountId, int page, int perpage)
+    {
+        return await dbSet.Where(a => a.AccountId == accountId)
+            .OrderByDescending(a => a.CreatedAt)
+            .Skip((page - 1) * perpage)
+            .Take(perpage)
+            .ToListAsync();
+    }
+}

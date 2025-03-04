@@ -6,6 +6,8 @@ namespace Simplebank.Infrastructure.Database;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
     public DbSet<Account> Accounts { get; set; }
+    
+    public DbSet<Entry> Entries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
