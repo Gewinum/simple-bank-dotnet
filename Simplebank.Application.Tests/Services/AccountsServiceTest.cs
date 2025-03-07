@@ -111,16 +111,15 @@ public class AccountsServiceTest
         var unitOfWorkMock = new Mock<IUnitOfWork>();
         var amount = 10;
 
-        accountsRepositoryMock.Setup(r => r.GetByIdAsync(account.Id)).ReturnsAsync(account);
+        accountsRepositoryMock.Setup(r => r.AddBalanceAsync(account.Id, amount)).ReturnsAsync(account);
         var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
         
         // Act
         await accountsService.AddBalanceAsync(account.Id, amount);
         
         // Assert
-        Assert.Equal(initialBalance + amount, account.Balance);
-        accountsRepositoryMock.Verify(r => r.GetByIdAsync(account.Id), Times.Once);
-        accountsRepositoryMock.Verify(r => r.UpdateAsync(account), Times.Once);
+        Assert.Equal(initialBalance, account.Balance);
+        accountsRepositoryMock.Verify(r => r.AddBalanceAsync(account.Id, amount), Times.Once);
         entriesRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Entry>()), Times.Once);
         unitOfWorkMock.Verify(u => u.BeginTransactionAsync(), Times.Once);
         unitOfWorkMock.Verify(u => u.CommitTransactionAsync(), Times.Once);
@@ -135,15 +134,14 @@ public class AccountsServiceTest
         var entriesRepositoryMock = new Mock<IEntriesRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
 
-        accountsRepositoryMock.Setup(r => r.GetByIdAsync(account.Id)).ReturnsAsync(null as Account);
+        accountsRepositoryMock.Setup(r => r.AddBalanceAsync(account.Id, 10)).ReturnsAsync(null as Account);
         var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
         
         // Act
         await Assert.ThrowsAsync<AccountNotFoundException>(() => accountsService.AddBalanceAsync(account.Id, 10));
         
         // Assert
-        accountsRepositoryMock.Verify(r => r.GetByIdAsync(account.Id), Times.Once);
-        accountsRepositoryMock.Verify(r => r.UpdateAsync(account), Times.Never);
+        accountsRepositoryMock.Verify(r => r.AddBalanceAsync(account.Id, 10), Times.Once);
         entriesRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Entry>()), Times.Never);
         unitOfWorkMock.Verify(u => u.BeginTransactionAsync(), Times.Once);
         unitOfWorkMock.Verify(u => u.RollbackTransactionAsync(), Times.Once);
