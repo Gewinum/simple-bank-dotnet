@@ -64,21 +64,17 @@ public class AccountsService : IAccountsService
         await _unitOfWork.BeginTransactionAsync();
         try
         {
-            var account = await _accountsRepository.GetByIdAsync(id);
+            var account = await _accountsRepository.AddBalanceAsync(id, amount);
             if (account == null)
             {
                 throw new AccountNotFoundException(id);
             }
-
             await _entriesRepository.AddAsync(new Entry
             {
-                AccountId = account.Id,
+                AccountId = id,
                 Amount = amount,
-                Description = "Balance modification from API"
+                Description = "Balance added by an API"
             });
-
-            account.Balance += amount;
-            await _accountsRepository.UpdateAsync(account);
             await _unitOfWork.CommitTransactionAsync();
         }
         catch (Exception e)
