@@ -1,4 +1,4 @@
-namespace Simplebank.Application.Exceptions.Accounts;
+namespace Simplebank.Application.Exceptions.Transfers;
 
 public class InsufficientBalanceException : Exception
 {
@@ -7,10 +7,10 @@ public class InsufficientBalanceException : Exception
         AccountId = accountId;
         Amount = amount;
     }
-
+    
     public Guid AccountId { get; }
     
     public decimal Amount { get; }
     
-    public override string Message => $"Account with id {AccountId} has insufficient balance to withdraw {Amount}";
+    public override string Message => $"Account with id {AccountId} has insufficient balance to transfer {Amount}";
 }
