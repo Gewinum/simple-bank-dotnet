@@ -110,8 +110,15 @@ public class AccountsServiceTest
         var entriesRepositoryMock = new Mock<IEntriesRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
         var amount = 10;
+        var testEntry = new Entry
+        {
+            AccountId = account.Id,
+            Amount = amount,
+            Description = "Testing"
+        };
 
         accountsRepositoryMock.Setup(r => r.AddBalanceAsync(account.Id, amount)).ReturnsAsync(account);
+        entriesRepositoryMock.Setup(r => r.AddAsync(It.IsAny<Entry>())).ReturnsAsync(testEntry);
         var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
         
         // Act
