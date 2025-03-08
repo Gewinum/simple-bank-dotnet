@@ -1,7 +1,10 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Simplebank.API.Exceptions;
 using Simplebank.API.Requests.Transfers;
 using Simplebank.Application.Exceptions.Accounts;
 using Simplebank.Application.Exceptions.Transfers;
+using Simplebank.Domain.Interfaces.Exceptions;
 using Simplebank.Domain.Interfaces.Services;
 
 namespace Simplebank.API.Controllers;
@@ -21,11 +24,11 @@ public class TransfersController : ControllerBase
         }
         catch (InsufficientBalanceException e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(ExceptionHandler.HandleException(e));
         }
         catch (AccountNotFoundException e)
         {
-            return BadRequest(e.Message);
+            return BadRequest(ExceptionHandler.HandleException(e));
         }
     }
 }

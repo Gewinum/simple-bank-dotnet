@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Simplebank.Application.Services;
 using Simplebank.Domain.Interfaces.Database;
@@ -23,6 +24,12 @@ public class Program
     {
         services.AddAuthorization();
         services.AddOpenApi();
+        
+        services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+        {
+            options.SerializerOptions.PropertyNameCaseInsensitive = false;
+            options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        });
         
         // Database
         services.AddDbContext<ApplicationDbContext>(options =>
