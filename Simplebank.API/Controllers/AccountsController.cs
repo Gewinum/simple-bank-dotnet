@@ -48,8 +48,8 @@ public class AccountsController : ControllerBase
     {
         try
         {
-            await accountsService.AddBalanceAsync(request.AccountId, request.Amount);
-            return Ok();
+            var entry = await accountsService.AddBalanceAsync(request.AccountId, request.Amount);
+            return Ok(entry);
         }
         catch (AccountNotFoundException e)
         {

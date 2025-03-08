@@ -59,7 +59,7 @@ public class AccountsService : IAccountsService
         }
     }
     
-    public async Task AddBalanceAsync(Guid id, decimal amount)
+    public async Task<Entry> AddBalanceAsync(Guid id, decimal amount)
     {
         await _unitOfWork.BeginTransactionAsync();
         try
@@ -69,13 +69,19 @@ public class AccountsService : IAccountsService
             {
                 throw new AccountNotFoundException(id);
             }
-            await _entriesRepository.AddAsync(new Entry
+
+            var entry = await _entriesRepository.AddAsync(new Entry
             {
                 AccountId = id,
                 Amount = amount,
                 Description = "Balance added by an API"
             });
+            if (entry == null)
+            {
+                throw new Exception("Unexpectedly failed to add entry");
+            }
             await _unitOfWork.CommitTransactionAsync();
+            return entry;
         }
         catch (Exception e)
         {

@@ -7,6 +7,14 @@ namespace Simplebank.Infrastructure.Repositories;
 
 public class AccountsRepository(ApplicationDbContext context) : Repository<Account>(context), IAccountsRepository
 {
+    public async Task<Account?> GetWithLockAsync(Guid id)
+    {
+        var result = dbSet.FromSqlRaw("SELECT * FROM Accounts WITH (UPDLOCK) WHERE Id = {0}", id).AsAsyncEnumerable();
+        await using var asyncEnumerator = result.GetAsyncEnumerator();
+        var hasResult = await asyncEnumerator.MoveNextAsync();
+        return hasResult ? asyncEnumerator.Current : null;
+    }
+    
     public async Task<IEnumerable<Account>> GetByOwnerAsync(string owner)
     {
         return await dbSet.Where(a => a.Owner == owner).ToListAsync();
