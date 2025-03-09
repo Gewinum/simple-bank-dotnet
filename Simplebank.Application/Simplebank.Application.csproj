@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Simplebank.Infrastructure\Simplebank.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Exceptions\Transfers\" />
+    </ItemGroup>
+
 </Project>

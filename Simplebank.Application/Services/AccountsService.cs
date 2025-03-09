@@ -70,6 +70,11 @@ public class AccountsService : IAccountsService
                 throw new AccountNotFoundException(id);
             }
 
+            if (account.Balance <= decimal.Zero)
+            {
+                throw new InsufficientBalanceException(account.Id, amount);
+            }
+
             var entry = await _entriesRepository.AddAsync(new Entry
             {
                 AccountId = id,

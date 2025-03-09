@@ -58,5 +58,9 @@ public class AccountsController : ControllerBase
         {
             return NotFound(ExceptionHandler.HandleException(e));
         }
+        catch (InsufficientBalanceException e)
+        {
+            return BadRequest(ExceptionHandler.HandleException(e));
+        }
     }
 }

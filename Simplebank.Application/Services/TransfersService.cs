@@ -1,11 +1,9 @@
 using Simplebank.Application.Exceptions.Accounts;
-using Simplebank.Application.Exceptions.Transfers;
 using Simplebank.Domain.Database.Models;
 using Simplebank.Domain.Interfaces.Database;
 using Simplebank.Domain.Interfaces.Repositories;
 using Simplebank.Domain.Interfaces.Services;
 using Simplebank.Domain.Models.Transfers;
-using InsufficientBalanceException = Simplebank.Application.Exceptions.Transfers.InsufficientBalanceException;
 
 namespace Simplebank.Application.Services;
 
