@@ -15,9 +15,9 @@ public class AccountsRepository(ApplicationDbContext context) : Repository<Accou
         return hasResult ? asyncEnumerator.Current : null;
     }
     
-    public async Task<IEnumerable<Account>> GetByOwnerAsync(string owner)
+    public async Task<IEnumerable<Account>> GetByOwnerAsync(Guid ownerId)
     {
-        return await dbSet.Where(a => a.Owner == owner).ToListAsync();
+        return await dbSet.Where(a => a.OwnerId == ownerId).ToListAsync();
     }
 
     public async Task<Account?> AddBalanceAsync(Guid id, decimal amount)

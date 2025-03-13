@@ -11,11 +11,23 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     
     public DbSet<Transfer> Transfers { get; set; }
 
+    public DbSet<User> Users { get; set; }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>()
-            .HasIndex(a => new { a.Owner, a.Currency })
+            .HasIndex(a => new { a.OwnerId, a.Currency })
             .HasDatabaseName("IX_Accounts_Owner_Currency")
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Login)
+            .HasDatabaseName("IX_Users_Login")
+            .IsUnique();
+
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .HasDatabaseName("IX_Users_Email")
             .IsUnique();
     }
 }

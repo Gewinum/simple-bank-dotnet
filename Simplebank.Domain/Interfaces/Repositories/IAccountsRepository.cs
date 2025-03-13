@@ -6,7 +6,7 @@ public interface IAccountsRepository : IRepository<Account>
 {
     Task<Account?> GetWithLockAsync(Guid id);
     
-    Task<IEnumerable<Account>> GetByOwnerAsync(string owner);
+    Task<IEnumerable<Account>> GetByOwnerAsync(Guid ownerId);
     
     Task<Account?> AddBalanceAsync(Guid id, decimal amount);
 }

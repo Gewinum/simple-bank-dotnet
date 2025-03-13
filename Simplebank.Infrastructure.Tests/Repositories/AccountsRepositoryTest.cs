@@ -79,7 +79,7 @@ public class AccountsRepositoryTest
         return new Account
         {
             Id = Guid.NewGuid(),
-            Owner = RandomString(10),
+            OwnerId = Guid.NewGuid(),
             Currency = randomCurrency,
             Balance = new Random().Next(0, 1000)
         };

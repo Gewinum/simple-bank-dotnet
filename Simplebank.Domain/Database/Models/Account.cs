@@ -7,7 +7,7 @@ namespace Simplebank.Domain.Database.Models;
 public class Account : BaseModel
 {
     [MaxLength(DatabaseConstants.DefaultStringLength)]
-    public required string Owner { get; set; }
+    public required Guid OwnerId { get; set; }
     
     [Decimal(18, 2)]
     public required decimal Balance { get; set; }

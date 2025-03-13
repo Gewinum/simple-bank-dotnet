@@ -2,8 +2,10 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Simplebank.API.Requests.Accounts;
 using Simplebank.API.Requests.Transfers;
+using Simplebank.API.Requests.Users;
 using Simplebank.Domain.Database.Models;
 using Simplebank.Domain.Models.Transfers;
+using Simplebank.Domain.Models.Users;
 
 namespace Simplebank.API.Tests;
 
@@ -22,16 +24,24 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var accountFrom = await CreateAccount(client, RandomString("Owner"), "USD");
-        var accountTo = await CreateAccount(client, RandomString("Owner"), "USD");
+        var (userFrom, tokenFrom) = CreateRandomUserAndToken(client);
+        var (userTo, tokenTo) = CreateRandomUserAndToken(client);
+        
+        var client1 = _factory.CreateClient();
+        client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
+        var client2 = _factory.CreateClient();
+        client2.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
+        
+        var accountFrom = await CreateAccount(client1, "USD");
+        var accountTo = await CreateAccount(client2, "USD");
 
-        await AddBalance(client, accountFrom.Id, 1000);
-        await AddBalance(client, accountTo.Id, 1000);
+        await AddBalance(client1, accountFrom.Id, 1000);
+        await AddBalance(client2, accountTo.Id, 1000);
         
         accountFrom.Balance += 1000;
         accountTo.Balance += 1000;
 
-        var transferResult = await ExecuteTransfer(client, accountFrom.Id, accountTo.Id, 100);
+        var transferResult = await ExecuteTransfer(client1, accountFrom.Id, accountTo.Id, 100);
         
         Assert.NotNull(transferResult);
         Assert.Equal(100, transferResult.Amount);
@@ -50,7 +60,9 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var accountTo = await CreateAccount(client, RandomString("Owner"), "USD");
+        var (userTo, tokenTo) = CreateRandomUserAndToken(client);
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
+        var accountTo = await CreateAccount(client, "USD");
         
         await AddBalance(client, accountTo.Id, 1000);
         
@@ -70,7 +82,9 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var accountFrom = await CreateAccount(client, RandomString("Owner"), "USD");
+        var (userFrom, tokenFrom) = CreateRandomUserAndToken(client);
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
+        var accountFrom = await CreateAccount(client, "USD");
         
         await AddBalance(client, accountFrom.Id, 1000);
         
@@ -90,11 +104,19 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var accountFrom = await CreateAccount(client, RandomString("Owner"), "USD");
-        var accountTo = await CreateAccount(client, RandomString("Owner"), "USD");
+        var (userFrom, tokenFrom) = CreateRandomUserAndToken(client);
+        var (userTo, tokenTo) = CreateRandomUserAndToken(client);
         
-        await AddBalance(client, accountFrom.Id, 1000);
-        await AddBalance(client, accountTo.Id, 1000);
+        var client1 = _factory.CreateClient();
+        client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
+        var client2 = _factory.CreateClient();
+        client2.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
+        
+        var accountFrom = await CreateAccount(client1, "USD");
+        var accountTo = await CreateAccount(client2, "USD");
+
+        await AddBalance(client1, accountFrom.Id, 1000);
+        await AddBalance(client2, accountTo.Id, 1000);
         
         var transferRequest = new TransferRequest
         {
@@ -103,7 +125,7 @@ public class TransferTests
             Amount = 10000
         };
         
-        var transferResponse = await client.PostAsJsonAsync("/transfers", transferRequest);
+        var transferResponse = await client1.PostAsJsonAsync("/transfers", transferRequest);
         Assert.Equal(System.Net.HttpStatusCode.BadRequest, transferResponse.StatusCode);
     }
     
@@ -112,11 +134,19 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
 
-        var accountFrom = await CreateAccount(client, RandomString("Owner"), "USD");
-        var accountTo = await CreateAccount(client, RandomString("Owner"), "USD");
+        var (userFrom, tokenFrom) = CreateRandomUserAndToken(client);
+        var (userTo, tokenTo) = CreateRandomUserAndToken(client);
+        
+        var client1 = _factory.CreateClient();
+        client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
+        var client2 = _factory.CreateClient();
+        client2.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
+        
+        var accountFrom = await CreateAccount(client1, "USD");
+        var accountTo = await CreateAccount(client2, "USD");
 
-        await AddBalance(client, accountFrom.Id, 10000);
-        await AddBalance(client, accountTo.Id, 10000);
+        await AddBalance(client1, accountFrom.Id, 10000);
+        await AddBalance(client2, accountTo.Id, 10000);
 
         var transferTasks = new List<Task>();
 
@@ -124,18 +154,18 @@ public class TransferTests
         {
             if (i % 2 == 0)
             {
-                transferTasks.Add(ExecuteTransferAndCheck(client, accountFrom.Id, accountTo.Id, 100));
+                transferTasks.Add(ExecuteTransferAndCheck(client1, accountFrom.Id, accountTo.Id, 100));
             }
             else
             {
-                transferTasks.Add(ExecuteTransferAndCheck(client, accountTo.Id, accountFrom.Id, 100));
+                transferTasks.Add(ExecuteTransferAndCheck(client2, accountTo.Id, accountFrom.Id, 100));
             }
         }
 
         await Task.WhenAll(transferTasks);
 
-        var updatedFromAccount = await GetAccount(client, accountFrom.Id);
-        var updatedToAccount = await GetAccount(client, accountTo.Id);
+        var updatedFromAccount = await GetAccount(client1, accountFrom.Id);
+        var updatedToAccount = await GetAccount(client2, accountTo.Id);
 
         Assert.Equal(10000, updatedFromAccount.Balance);
         Assert.Equal(10000, updatedToAccount.Balance);
@@ -182,12 +212,11 @@ public class TransferTests
         return account;
     }
     
-    private async Task<Account> CreateAccount(HttpClient client, string owner, string currency)
+    private async Task<Account> CreateAccount(HttpClient client, string currency)
     {
         var accountCreateRequest = new CreateAccountRequest
         {
-            Currency = currency,
-            Owner = owner
+            Currency = currency, 
         };
         
         var createAccountResponse = await client.PostAsJsonAsync("/accounts", accountCreateRequest);
@@ -210,5 +239,42 @@ public class TransferTests
         addBalanceResponse.EnsureSuccessStatusCode();
     }
     
+    private (User, string) CreateRandomUserAndToken(HttpClient client)
+    {
+        var creationParam = new CreateUserRequest
+        {
+            Login = RandomString("login"),
+            Name = RandomString("name"),
+            Password = RandomString("password"),
+            Email = RandomEmail()
+        };
+        
+        var userResponse = client.PostAsJsonAsync("/users", creationParam).Result;
+        userResponse.EnsureSuccessStatusCode();
+        var userDto = userResponse.Content.ReadFromJsonAsync<UserDto>().Result;
+        Assert.NotNull(userDto);
+        
+        var loginResponse = client.PostAsJsonAsync("/users/login", new LoginRequest
+        {
+            Login = creationParam.Login,
+            Password = creationParam.Password
+        }).Result;
+        
+        loginResponse.EnsureSuccessStatusCode();
+        var authResult = loginResponse.Content.ReadFromJsonAsync<AuthenticationResult>().Result;
+        Assert.NotNull(authResult);
+        
+        return (new User
+        {
+            Id = userDto.Id,
+            Login = creationParam.Login,
+            Name = creationParam.Name,
+            Email = creationParam.Email,
+            Password = creationParam.Password
+        }, authResult.Token);
+    }
+    
     private string RandomString(string prefix) => $"{prefix}_{Guid.NewGuid()}";
+    
+    private string RandomEmail() => $"{Guid.NewGuid()}@example.com";
 }
