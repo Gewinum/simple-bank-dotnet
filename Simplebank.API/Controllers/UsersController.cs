@@ -51,7 +51,7 @@ public class UsersController : ControllerBase
             var result = await usersService.LoginAsync(request.Login, request.Password);
             return Ok(result);
         }
-        catch (UserNotFoundException e)
+        catch (LoginNotFoundException e)
         {
             return NotFound(ExceptionHandler.HandleException(e));
         }
