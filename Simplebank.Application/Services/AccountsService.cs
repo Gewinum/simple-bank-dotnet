@@ -84,7 +84,7 @@ public class AccountsService : IAccountsService
                 throw new AccountNotOwnedException(userId, id);
             }
 
-            if (account.Balance <= decimal.Zero)
+            if (account.Balance < 0)
             {
                 throw new InsufficientBalanceException(account.Id, amount);
             }

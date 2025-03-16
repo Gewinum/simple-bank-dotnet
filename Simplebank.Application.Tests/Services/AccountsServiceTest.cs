@@ -20,7 +20,7 @@ public class AccountsServiceTest
     public async Task GetAccountByIdSuccessTest()
     {
         // Arrange
-        var account = CreateRandomAccount();
+        var account = DataGenerator.RandomAccount(Guid.NewGuid(), "USD");
         var accountsRepositoryMock = new Mock<IAccountsRepository>();
         var entriesRepositoryMock = new Mock<IEntriesRepository>();
         var unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -50,6 +50,24 @@ public class AccountsServiceTest
         
         // Assert
         accountsRepositoryMock.Verify(r => r.GetByIdAsync(It.IsAny<Guid>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAccountNotOwnedTest()
+    {
+        // Arrange
+        var account = DataGenerator.RandomAccount(Guid.NewGuid(), "USD");
+        var accountsRepositoryMock = new Mock<IAccountsRepository>();
+        var entriesRepositoryMock = new Mock<IEntriesRepository>();
+        accountsRepositoryMock.Setup(r => r.GetByIdAsync(account.Id)).ReturnsAsync(account);
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
+        var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
+
+        // Act
+        await Assert.ThrowsAsync<AccountNotOwnedException>(() => accountsService.GetAccountAsync(Guid.NewGuid(), account.Id));
+        
+        // Assert
+        accountsRepositoryMock.Verify(r => r.GetByIdAsync(account.Id), Times.Once);
     }
 
     [Fact]
@@ -149,6 +167,29 @@ public class AccountsServiceTest
         
         // Assert
         accountsRepositoryMock.Verify(r => r.AddBalanceAsync(account.Id, 10), Times.Once);
+        entriesRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Entry>()), Times.Never);
+        unitOfWorkMock.Verify(u => u.BeginTransactionAsync(), Times.Once);
+        unitOfWorkMock.Verify(u => u.RollbackTransactionAsync(), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddBalanceAccountInsufficientBalanceTest()
+    {
+        // Arrange
+        var account = CreateRandomAccount();
+        account.Balance -= 10000;
+        var accountsRepositoryMock = new Mock<IAccountsRepository>();
+        var entriesRepositoryMock = new Mock<IEntriesRepository>();
+        var unitOfWorkMock = new Mock<IUnitOfWork>();
+
+        accountsRepositoryMock.Setup(r => r.AddBalanceAsync(account.Id, -10000)).ReturnsAsync(account);
+        var accountsService = new AccountsService(accountsRepositoryMock.Object, entriesRepositoryMock.Object, unitOfWorkMock.Object);
+        
+        // Act
+        await Assert.ThrowsAsync<InsufficientBalanceException>(() => accountsService.AddBalanceAsync(account.OwnerId, account.Id, -10000));
+        
+        // Assert
+        accountsRepositoryMock.Verify(r => r.AddBalanceAsync(account.Id, -10000), Times.Once);
         entriesRepositoryMock.Verify(r => r.AddAsync(It.IsAny<Entry>()), Times.Never);
         unitOfWorkMock.Verify(u => u.BeginTransactionAsync(), Times.Once);
         unitOfWorkMock.Verify(u => u.RollbackTransactionAsync(), Times.Once);
