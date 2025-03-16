@@ -24,16 +24,16 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var (userFrom, tokenFrom) = CreateRandomUserAndToken(client);
-        var (userTo, tokenTo) = CreateRandomUserAndToken(client);
+        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
         
         var client1 = _factory.CreateClient();
         client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
         var client2 = _factory.CreateClient();
         client2.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
         
-        var accountFrom = await CreateAccount(client1, "USD");
-        var accountTo = await CreateAccount(client2, "USD");
+        var accountFrom = await client1.CreateAccountAsync("USD");
+        var accountTo = await client2.CreateAccountAsync("USD");
 
         await AddBalance(client1, accountFrom.Id, 1000);
         await AddBalance(client2, accountTo.Id, 1000);
@@ -60,9 +60,9 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var (userTo, tokenTo) = CreateRandomUserAndToken(client);
+        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
-        var accountTo = await CreateAccount(client, "USD");
+        var accountTo = await client.CreateAccountAsync("USD");
         
         await AddBalance(client, accountTo.Id, 1000);
         
@@ -82,9 +82,9 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var (userFrom, tokenFrom) = CreateRandomUserAndToken(client);
+        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
-        var accountFrom = await CreateAccount(client, "USD");
+        var accountFrom = await client.CreateAccountAsync("USD");
         
         await AddBalance(client, accountFrom.Id, 1000);
         
@@ -104,16 +104,16 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var (userFrom, tokenFrom) = CreateRandomUserAndToken(client);
-        var (userTo, tokenTo) = CreateRandomUserAndToken(client);
+        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
         
         var client1 = _factory.CreateClient();
         client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
         var client2 = _factory.CreateClient();
         client2.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
         
-        var accountFrom = await CreateAccount(client1, "USD");
-        var accountTo = await CreateAccount(client2, "USD");
+        var accountFrom = await client1.CreateAccountAsync("USD");
+        var accountTo = await client2.CreateAccountAsync("USD");
 
         await AddBalance(client1, accountFrom.Id, 1000);
         await AddBalance(client2, accountTo.Id, 1000);
@@ -134,16 +134,16 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
 
-        var (userFrom, tokenFrom) = CreateRandomUserAndToken(client);
-        var (userTo, tokenTo) = CreateRandomUserAndToken(client);
+        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
         
         var client1 = _factory.CreateClient();
         client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
         var client2 = _factory.CreateClient();
         client2.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
         
-        var accountFrom = await CreateAccount(client1, "USD");
-        var accountTo = await CreateAccount(client2, "USD");
+        var accountFrom = await client1.CreateAccountAsync("USD");
+        var accountTo = await client2.CreateAccountAsync("USD");
 
         await AddBalance(client1, accountFrom.Id, 10000);
         await AddBalance(client2, accountTo.Id, 10000);
@@ -212,21 +212,6 @@ public class TransferTests
         return account;
     }
     
-    private async Task<Account> CreateAccount(HttpClient client, string currency)
-    {
-        var accountCreateRequest = new CreateAccountRequest
-        {
-            Currency = currency, 
-        };
-        
-        var createAccountResponse = await client.PostAsJsonAsync("/accounts", accountCreateRequest);
-        createAccountResponse.EnsureSuccessStatusCode();
-        
-        var account = await createAccountResponse.Content.ReadFromJsonAsync<Account>();
-        Assert.NotNull(account);
-        return account;
-    }
-    
     private async Task AddBalance(HttpClient client, Guid accountId, decimal amount)
     {
         var addBalanceRequest = new ChangeBalanceRequest
@@ -238,43 +223,4 @@ public class TransferTests
         var addBalanceResponse = await client.PostAsJsonAsync("/accounts/balance", addBalanceRequest);
         addBalanceResponse.EnsureSuccessStatusCode();
     }
-    
-    private (User, string) CreateRandomUserAndToken(HttpClient client)
-    {
-        var creationParam = new CreateUserRequest
-        {
-            Login = RandomString("login"),
-            Name = RandomString("name"),
-            Password = RandomString("password"),
-            Email = RandomEmail()
-        };
-        
-        var userResponse = client.PostAsJsonAsync("/users", creationParam).Result;
-        userResponse.EnsureSuccessStatusCode();
-        var userDto = userResponse.Content.ReadFromJsonAsync<UserDto>().Result;
-        Assert.NotNull(userDto);
-        
-        var loginResponse = client.PostAsJsonAsync("/users/login", new LoginRequest
-        {
-            Login = creationParam.Login,
-            Password = creationParam.Password
-        }).Result;
-        
-        loginResponse.EnsureSuccessStatusCode();
-        var authResult = loginResponse.Content.ReadFromJsonAsync<AuthenticationResult>().Result;
-        Assert.NotNull(authResult);
-        
-        return (new User
-        {
-            Id = userDto.Id,
-            Login = creationParam.Login,
-            Name = creationParam.Name,
-            Email = creationParam.Email,
-            Password = creationParam.Password
-        }, authResult.Token);
-    }
-    
-    private string RandomString(string prefix) => $"{prefix}_{Guid.NewGuid()}";
-    
-    private string RandomEmail() => $"{Guid.NewGuid()}@example.com";
 }

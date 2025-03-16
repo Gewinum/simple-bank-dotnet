@@ -23,19 +23,10 @@ public class EntryTests
     {
         var client = _factory.CreateClient();
         
-        var (user, token) = CreateRandomUserAndToken(client);
+        var (_, token) = await client.CreateRandomUserAndTokenAsync();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
-        var accountCreateRequest = new CreateAccountRequest
-        {
-            Currency = CurrencyConstants.Currencies[0], 
-        };
-        
-        var createAccountResponse = await client.PostAsJsonAsync("/accounts", accountCreateRequest);
-        createAccountResponse.EnsureSuccessStatusCode();
-        
-        var account = await createAccountResponse.Content.ReadFromJsonAsync<Account>();
-        Assert.NotNull(account);
+        var account = await client.CreateAccountAsync(CurrencyConstants.Currencies[0]);
         
         var addBalanceRequest = new ChangeBalanceRequest
         {
@@ -54,43 +45,4 @@ public class EntryTests
         Assert.Equal(account.Id, entry.AccountId);
         Assert.Equal(100, entry.Amount);
     }
-    
-    private (User, string) CreateRandomUserAndToken(HttpClient client)
-    {
-        var creationParam = new CreateUserRequest
-        {
-            Login = RandomString("login"),
-            Name = RandomString("name"),
-            Password = RandomString("password"),
-            Email = RandomEmail()
-        };
-        
-        var userResponse = client.PostAsJsonAsync("/users", creationParam).Result;
-        userResponse.EnsureSuccessStatusCode();
-        var userDto = userResponse.Content.ReadFromJsonAsync<UserDto>().Result;
-        Assert.NotNull(userDto);
-        
-        var loginResponse = client.PostAsJsonAsync("/users/login", new LoginRequest
-        {
-            Login = creationParam.Login,
-            Password = creationParam.Password
-        }).Result;
-        
-        loginResponse.EnsureSuccessStatusCode();
-        var authResult = loginResponse.Content.ReadFromJsonAsync<AuthenticationResult>().Result;
-        Assert.NotNull(authResult);
-        
-        return (new User
-        {
-            Id = userDto.Id,
-            Login = creationParam.Login,
-            Name = creationParam.Name,
-            Email = creationParam.Email,
-            Password = creationParam.Password
-        }, authResult.Token);
-    }
-    
-    private string RandomString(string prefix) => $"{prefix}_{Guid.NewGuid()}";
-    
-    private string RandomEmail() => $"{Guid.NewGuid()}@example.com";
 }

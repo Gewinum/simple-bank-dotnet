@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Simplebank.API.Requests.Accounts;
 using Simplebank.API.Requests.Users;
+using Simplebank.Domain.Constants;
 using Simplebank.Domain.Database.Models;
 using Simplebank.Domain.Models.Users;
 
@@ -23,19 +24,13 @@ public class AccountTests
     {
         // Arrange
         var client = _factory.CreateClient();
+
+        var (_, token) = await client.CreateRandomUserAndTokenAsync();
         
-        var (user, token) = CreateRandomUserAndToken(client);
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
         
         // Act
-        var createAccountRequest = new CreateAccountRequest
-        {
-            Currency = "USD",
-        };
-        var createResponse = await client.PostAsJsonAsync("/accounts", createAccountRequest);
-        createResponse.EnsureSuccessStatusCode();
-        var account = await createResponse.Content.ReadFromJsonAsync<Account>();
-        Assert.NotNull(account);
+        var account = await client.CreateAccountAsync(CurrencyConstants.Currencies[0]);
         
         // Get account
         var getResponse = await client.GetAsync($"/accounts/{account.Id}");
@@ -56,7 +51,7 @@ public class AccountTests
         // Arrange
         var client = _factory.CreateClient();
         
-        var (user, token) = CreateRandomUserAndToken(client);
+        var (_, token) = await client.CreateRandomUserAndTokenAsync();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
         
         // Act
@@ -64,9 +59,8 @@ public class AccountTests
         {
             Currency = "USD",
         };
-        
-        var createResponse = await client.PostAsJsonAsync("/accounts", createAccountRequest);
-        createResponse.EnsureSuccessStatusCode();
+
+        await client.CreateAccountAsync("USD");
         
         var createResponse2 = await client.PostAsJsonAsync("/accounts", createAccountRequest);
         Assert.Equal(HttpStatusCode.Conflict, createResponse2.StatusCode);
@@ -77,7 +71,7 @@ public class AccountTests
     {
         var client = _factory.CreateClient();
         
-        var (user, token) = CreateRandomUserAndToken(client);
+        var (_, token) = await client.CreateRandomUserAndTokenAsync();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
         
         var response = await client.GetAsync($"/accounts/{Guid.NewGuid()}");
@@ -90,19 +84,10 @@ public class AccountTests
     {
         var client = _factory.CreateClient();
         
-        var (user, token) = CreateRandomUserAndToken(client);
+        var (_, token) = await client.CreateRandomUserAndTokenAsync();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-        
-        var createAccountRequest = new CreateAccountRequest
-        {
-            Currency = "USD",
-        };
-        
-        var createResponse = await client.PostAsJsonAsync("/accounts", createAccountRequest);
-        createResponse.EnsureSuccessStatusCode();
-        
-        var account = await createResponse.Content.ReadFromJsonAsync<Account>();
-        Assert.NotNull(account);
+
+        var account = await client.CreateAccountAsync("USD");
         
         var addBalanceRequest = new ChangeBalanceRequest
         {
@@ -142,43 +127,4 @@ public class AccountTests
         Assert.NotNull(accountAfterReduce);
         Assert.Equal(accountAfterAdd.Balance - 50, accountAfterReduce.Balance);
     }
-
-    private (User, string) CreateRandomUserAndToken(HttpClient client)
-    {
-        var creationParam = new CreateUserRequest
-        {
-            Login = RandomString("login"),
-            Name = RandomString("name"),
-            Password = RandomString("password"),
-            Email = RandomEmail()
-        };
-        
-        var userResponse = client.PostAsJsonAsync("/users", creationParam).Result;
-        userResponse.EnsureSuccessStatusCode();
-        var userDto = userResponse.Content.ReadFromJsonAsync<UserDto>().Result;
-        Assert.NotNull(userDto);
-        
-        var loginResponse = client.PostAsJsonAsync("/users/login", new LoginRequest
-        {
-            Login = creationParam.Login,
-            Password = creationParam.Password
-        }).Result;
-        
-        loginResponse.EnsureSuccessStatusCode();
-        var authResult = loginResponse.Content.ReadFromJsonAsync<AuthenticationResult>().Result;
-        Assert.NotNull(authResult);
-        
-        return (new User
-        {
-            Id = userDto.Id,
-            Login = creationParam.Login,
-            Name = creationParam.Name,
-            Email = creationParam.Email,
-            Password = creationParam.Password
-        }, authResult.Token);
-    }
-    
-    private string RandomString(string prefix) => $"{prefix}_{Guid.NewGuid()}";
-    
-    private string RandomEmail() => $"{Guid.NewGuid()}@example.com";
 }
