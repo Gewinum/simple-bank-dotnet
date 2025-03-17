@@ -1,6 +1,6 @@
 namespace Simplebank.Domain.Models.Users;
 
-public class AuthenticationResult
+public class LoginResult
 {
     public required string Token { get; set; }
 }

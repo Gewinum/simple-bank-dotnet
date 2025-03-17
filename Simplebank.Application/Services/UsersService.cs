@@ -84,7 +84,7 @@ public class UsersService : IUsersService
         }
     }
 
-    public async Task<AuthenticationResult> LoginAsync(string login, string password)
+    public async Task<LoginResult> LoginAsync(string login, string password)
     {
         var user = await _usersRepository.GetByLoginAsync(login);
         if (user == null)
@@ -98,7 +98,7 @@ public class UsersService : IUsersService
         }
 
         var token = _tokensProvider.GenerateToken(user.Id);
-        return new AuthenticationResult
+        return new LoginResult
         {
             Token = token,
         };

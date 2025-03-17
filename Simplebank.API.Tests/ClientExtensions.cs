@@ -57,7 +57,7 @@ public static class ClientExtensions
         
         var response = await client.PostAsJsonAsync("/users/login", loginRequest);
         response.EnsureSuccessStatusCode();
-        var tokenResponse = await response.Content.ReadFromJsonAsync<AuthenticationResult>();
+        var tokenResponse = await response.Content.ReadFromJsonAsync<LoginResult>();
         Assert.NotNull(tokenResponse);
         return tokenResponse.Token;
     }

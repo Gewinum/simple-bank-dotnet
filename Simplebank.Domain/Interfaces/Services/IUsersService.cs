@@ -8,5 +8,5 @@ public interface IUsersService
     
     Task<UserDto> CreateAsync(string login, string name, string email, string password);
     
-    Task<AuthenticationResult> LoginAsync(string login, string password);
+    Task<LoginResult> LoginAsync(string login, string password);
 }
