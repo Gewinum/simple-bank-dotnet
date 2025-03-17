@@ -16,6 +16,29 @@ public class UserTests
     {
         _factory = factory;
     }
+
+    [Fact]
+    public async Task GetUserWithoutAuthTest()
+    {
+        var client = _factory.CreateClient();
+
+        var user = await client.CreateUserAsync();
+        
+        var getUserRequest = await client.GetAsync($"/users/{user.Id}");
+        Assert.Equal(HttpStatusCode.Unauthorized, getUserRequest.StatusCode);
+    }
+
+    [Fact]
+    public async Task GetUserWithIncorrectToken()
+    {
+        var client = _factory.CreateClient();
+
+        var user = await client.CreateUserAsync();
+        client.DefaultRequestHeaders.Add("Authorization", "Bearer invalidToken");
+        
+        var getUserRequest = await client.GetAsync($"/users/{user.Id}");
+        Assert.Equal(HttpStatusCode.Unauthorized, getUserRequest.StatusCode);
+    }
     
     [Fact]
     public async Task CreateUserAndLogin()
