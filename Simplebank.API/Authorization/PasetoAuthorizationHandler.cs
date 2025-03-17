@@ -19,7 +19,11 @@ public static class AuthenticationExtensions
                 options.DefaultAuthenticateScheme = scheme;
                 options.DefaultChallengeScheme = scheme;
             })
-            .AddScheme<AuthenticationSchemeOptions, PasetoAuthenticationHandler>(scheme, configureOptions);
+            .AddScheme<AuthenticationSchemeOptions, PasetoAuthenticationHandler>(scheme, options =>
+            {
+                configureOptions(options);
+                options.TimeProvider = TimeProvider.System;
+            });
     }
 }
 
@@ -31,20 +35,18 @@ public class PasetoAuthenticationHandler : AuthenticationHandler<AuthenticationS
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
-        ISystemClock clock,
         ITokensProvider tokensProvider)
-        : base(options, logger, encoder, clock)
+        : base(options, logger, encoder)
     {
         _tokensProvider = tokensProvider;
     }
 
-    protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
+    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
         var authHeader = Request.Headers["Authorization"].ToString();
         if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
         {
-            Logger.LogInformation("No Authorization header or invalid scheme.");
-            return AuthenticateResult.NoResult();
+            return Task.FromResult(AuthenticateResult.NoResult());
         }
 
         var token = authHeader.Substring("Bearer ".Length).Trim();
@@ -52,8 +54,7 @@ public class PasetoAuthenticationHandler : AuthenticationHandler<AuthenticationS
 
         if (tokenInfo == null)
         {
-            Logger.LogWarning("Invalid token.");
-            return AuthenticateResult.Fail("Invalid token");
+            return Task.FromResult(AuthenticateResult.Fail("Invalid token"));
         }
 
         var claims = new[] { new Claim(ClaimTypes.NameIdentifier, tokenInfo.UserId.ToString()) };
@@ -61,6 +62,6 @@ public class PasetoAuthenticationHandler : AuthenticationHandler<AuthenticationS
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, Scheme.Name);
 
-        return AuthenticateResult.Success(ticket);
+        return Task.FromResult(AuthenticateResult.Success(ticket));
     }
 }
