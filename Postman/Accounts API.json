@@ -1,0 +1,142 @@
+{
+	"info": {
+		"_postman_id": "865e7d3e-df9c-4c23-8f99-2524161f0ed5",
+		"name": "Accounts API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14589022"
+	},
+	"item": [
+		{
+			"name": "Get account by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url}}/accounts/62aadc8f-387f-437d-14e3-08dd6180f583",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"accounts",
+						"62aadc8f-387f-437d-14e3-08dd6180f583"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all accounts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{Url}}/accounts",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add new account",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "v4.local.Hj99mIsfrulIB6MWsLSNQlaVykWgg6vjZhoOYYrbl1xcAqN_77EH0WPm_vgc64kRdtVjidOTW0G0n2Q0LuEsCdrycaPQlrQcFtU486A8UJBYTmSQhqLKE5luK4z7ce3MZ47imY3Cm6OoixOVqrzlJNSYiijio9PGWeDZK46YzzvkWSLryYwGUNffYLuPoJI0-NnJ",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"owner\": \"skibidia\",\n    \"currency\": \"USD\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/accounts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"accounts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add balance",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"accountId\": \"62aadc8f-387f-437d-14e3-08dd6180f583\",\n    \"amount\": 1000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Url}}/accounts/balance",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"accounts",
+						"balance"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{AuthToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

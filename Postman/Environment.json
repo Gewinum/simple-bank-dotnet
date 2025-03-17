@@ -1,0 +1,21 @@
+{
+	"id": "cd34b808-6434-402f-a1c8-8c20de159351",
+	"name": "Simplebank API Environment",
+	"values": [
+		{
+			"key": "AuthToken",
+			"value": "",
+			"type": "secret",
+			"enabled": true
+		},
+		{
+			"key": "Url",
+			"value": "http://localhost:8080",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2025-03-17T15:52:25.663Z",
+	"_postman_exported_using": "Postman/11.28.2"
+}

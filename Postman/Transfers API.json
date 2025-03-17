@@ -1,0 +1,78 @@
+{
+	"info": {
+		"_postman_id": "07156ac2-5473-431b-8bad-7a1fb987128f",
+		"name": "Transfers API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14589022"
+	},
+	"item": [
+		{
+			"name": "Process a transfer",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "v4.local.1n8xbnzNB5LnadMVBoHSy0Y7bf_uKaGJKdNAEqw--lQ9HhglkDtkFKYCflz_YWVaxUsDJERQI7uQsND6381Rjpl5t4R3DxGhdyCYGYaQcK0qE4NpIZzaYYFesTPvGZspi5FZGp5RgcR0E-eenvCr9GisNnq-_BtOBnk4HNwA7qCXtPySz0BwOv4uHacP5HebFltK",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fromAccount\": \"a0edde87-e3ad-4745-bed0-08dd5da06954\",\n    \"toAccount\": \"be17459f-feec-491e-bed1-08dd5da06954\",\n    \"amount\": 20\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Url}}/transfers",
+					"host": [
+						"{{Url}}"
+					],
+					"path": [
+						"transfers"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{AuthToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
