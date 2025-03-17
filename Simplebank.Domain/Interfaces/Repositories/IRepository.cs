@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Storage;
-
 namespace Simplebank.Domain.Interfaces.Repositories;
 
 public interface IRepository<T> where T : class

@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
 using AutoMapper;
 using Moq;
 using Simplebank.Application.Exceptions.Users;

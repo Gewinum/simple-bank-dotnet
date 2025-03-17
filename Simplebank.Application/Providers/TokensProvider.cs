@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using Paseto;
 using Paseto.Builder;
 using Paseto.Cryptography.Key;

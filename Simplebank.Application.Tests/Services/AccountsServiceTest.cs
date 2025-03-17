@@ -1,7 +1,3 @@
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Storage;
 using Moq;
 using Simplebank.Application.Exceptions.Accounts;
 using Simplebank.Application.Services;
@@ -9,7 +5,6 @@ using Simplebank.Domain.Constants;
 using Simplebank.Domain.Database.Models;
 using Simplebank.Domain.Interfaces.Database;
 using Simplebank.Domain.Interfaces.Repositories;
-using Simplebank.Infrastructure.Database;
 using Simplebank.Infrastructure.Exceptions;
 
 namespace Simplebank.Application.Tests.Services;

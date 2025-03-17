@@ -1,10 +1,9 @@
-namespace Simplebank.Application.Providers;
-
-using Simplebank.Domain.Interfaces.Providers;
-using System;
 using System.Security.Cryptography;
 using System.Text;
 using Konscious.Security.Cryptography;
+using Simplebank.Domain.Interfaces.Providers;
+
+namespace Simplebank.Application.Providers;
 
 public class PasswordsProvider : IPasswordsProvider
 {

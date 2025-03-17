@@ -1,7 +1,3 @@
-using Paseto;
-using Paseto.Builder;
-using Paseto.Cryptography.Key;
-using Paseto.Protocol;
 using Simplebank.Application.Providers;
 
 namespace Simplebank.Application.Tests.Providers;

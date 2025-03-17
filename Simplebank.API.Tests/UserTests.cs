@@ -2,7 +2,6 @@ using System.Net;
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Simplebank.API.Requests.Users;
-using Simplebank.Domain.Database.Models;
 using Simplebank.Domain.Models.Users;
 
 namespace Simplebank.API.Tests;

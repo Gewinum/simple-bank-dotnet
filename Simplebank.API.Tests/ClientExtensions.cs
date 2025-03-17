@@ -1,7 +1,6 @@
 using System.Net.Http.Json;
 using Simplebank.API.Requests.Accounts;
 using Simplebank.API.Requests.Users;
-using Simplebank.Domain.Constants;
 using Simplebank.Domain.Database.Models;
 using Simplebank.Domain.Models.Users;
 

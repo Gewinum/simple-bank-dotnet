@@ -1,6 +1,3 @@
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Simplebank.Application.Exceptions.Accounts;
 using Simplebank.Domain.Database.Models;
 using Simplebank.Domain.Interfaces.Database;

@@ -1,9 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using Simplebank.Domain.Constants;
 using Simplebank.Domain.Database.Models;
 using Simplebank.Infrastructure.Database;
-using Simplebank.Infrastructure.Exceptions;
 using Simplebank.Infrastructure.Repositories;
 
 namespace Simplebank.Infrastructure.Tests.Repositories;

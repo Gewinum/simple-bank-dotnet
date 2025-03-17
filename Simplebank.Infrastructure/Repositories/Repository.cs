@@ -1,7 +1,5 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Microsoft.EntityFrameworkCore.Storage;
 using Simplebank.Domain.Interfaces.Models;
 using Simplebank.Domain.Interfaces.Repositories;
 using Simplebank.Infrastructure.Database;

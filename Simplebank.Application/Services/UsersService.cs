@@ -1,7 +1,4 @@
-using System.Net.Mail;
 using AutoMapper;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 using Simplebank.Application.Exceptions.Users;
 using Simplebank.Domain.Database.Models;
 using Simplebank.Domain.Interfaces.Database;
