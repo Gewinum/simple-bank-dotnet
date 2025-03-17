@@ -2,7 +2,10 @@
 using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Simplebank.API.Requests.Accounts;
+using Simplebank.API.Requests.Users;
+using Simplebank.Domain.Constants;
 using Simplebank.Domain.Database.Models;
+using Simplebank.Domain.Models.Users;
 
 namespace Simplebank.API.Tests;
 
@@ -21,17 +24,13 @@ public class AccountTests
     {
         // Arrange
         var client = _factory.CreateClient();
+
+        var (_, token) = await client.CreateRandomUserAndTokenAsync();
+        
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
         
         // Act
-        var createAccountRequest = new CreateAccountRequest
-        {
-            Currency = "USD",
-            Owner = RandomString("Owner")
-        };
-        var createResponse = await client.PostAsJsonAsync("/accounts", createAccountRequest);
-        createResponse.EnsureSuccessStatusCode();
-        var account = await createResponse.Content.ReadFromJsonAsync<Account>();
-        Assert.NotNull(account);
+        var account = await client.CreateAccountAsync(CurrencyConstants.Currencies[0]);
         
         // Get account
         var getResponse = await client.GetAsync($"/accounts/{account.Id}");
@@ -41,7 +40,7 @@ public class AccountTests
         var accountResponse = await getResponse.Content.ReadFromJsonAsync<Account>();
         Assert.NotNull(accountResponse);
         Assert.Equal(account.Id, accountResponse.Id);
-        Assert.Equal(account.Owner, accountResponse.Owner);
+        Assert.Equal(account.OwnerId, accountResponse.OwnerId);
         Assert.Equal(account.Currency, accountResponse.Currency);
         Assert.Equal(account.Balance, accountResponse.Balance);
     }
@@ -52,15 +51,16 @@ public class AccountTests
         // Arrange
         var client = _factory.CreateClient();
         
+        var (_, token) = await client.CreateRandomUserAndTokenAsync();
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+        
         // Act
         var createAccountRequest = new CreateAccountRequest
         {
             Currency = "USD",
-            Owner = RandomString("Owner")
         };
-        
-        var createResponse = await client.PostAsJsonAsync("/accounts", createAccountRequest);
-        createResponse.EnsureSuccessStatusCode();
+
+        await client.CreateAccountAsync("USD");
         
         var createResponse2 = await client.PostAsJsonAsync("/accounts", createAccountRequest);
         Assert.Equal(HttpStatusCode.Conflict, createResponse2.StatusCode);
@@ -70,6 +70,9 @@ public class AccountTests
     public async Task GetUnexistingAccount()
     {
         var client = _factory.CreateClient();
+        
+        var (_, token) = await client.CreateRandomUserAndTokenAsync();
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
         
         var response = await client.GetAsync($"/accounts/{Guid.NewGuid()}");
         
@@ -81,17 +84,10 @@ public class AccountTests
     {
         var client = _factory.CreateClient();
         
-        var createAccountRequest = new CreateAccountRequest
-        {
-            Currency = "USD",
-            Owner = RandomString("Owner")
-        };
-        
-        var createResponse = await client.PostAsJsonAsync("/accounts", createAccountRequest);
-        createResponse.EnsureSuccessStatusCode();
-        
-        var account = await createResponse.Content.ReadFromJsonAsync<Account>();
-        Assert.NotNull(account);
+        var (_, token) = await client.CreateRandomUserAndTokenAsync();
+        client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+
+        var account = await client.CreateAccountAsync("USD");
         
         var addBalanceRequest = new ChangeBalanceRequest
         {
@@ -131,6 +127,4 @@ public class AccountTests
         Assert.NotNull(accountAfterReduce);
         Assert.Equal(accountAfterAdd.Balance - 50, accountAfterReduce.Balance);
     }
-    
-    private string RandomString(string prefix) => $"{prefix}_{Guid.NewGuid()}";
 }

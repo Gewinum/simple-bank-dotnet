@@ -23,24 +23,33 @@ public class AccountsService : IAccountsService
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<Account> GetAccountAsync(Guid id)
+    public async Task<Account> GetAccountAsync(Guid userId, Guid id)
     {
         var account = await _accountsRepository.GetByIdAsync(id);
         if (account == null)
         {
             throw new AccountNotFoundException(id);
         }
+        if (account.OwnerId != userId)
+        {
+            throw new AccountNotOwnedException(userId, id);
+        }
         return account;
     }
     
-    public async Task<Account?> CreateAccountAsync(string owner, string currency)
+    public async Task<IEnumerable<Account>> GetAccountsAsync(Guid userId)
+    {
+        return await _accountsRepository.GetByOwnerAsync(userId);
+    }
+    
+    public async Task<Account?> CreateAccountAsync(Guid ownerId, string currency)
     {
         await _unitOfWork.BeginTransactionAsync();
         try
         {
             var account = await _accountsRepository.AddAsync(new Account
             {
-                Owner = owner,
+                OwnerId = ownerId,
                 Balance = 0,
                 Currency = currency
             });
@@ -50,7 +59,7 @@ public class AccountsService : IAccountsService
         catch (DuplicateKeysException)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            throw new AccountAlreadyExistsException(owner, currency);
+            throw new AccountAlreadyExistsException(ownerId, currency);
         }
         catch (Exception e)
         {
@@ -59,7 +68,7 @@ public class AccountsService : IAccountsService
         }
     }
     
-    public async Task<Entry> AddBalanceAsync(Guid id, decimal amount)
+    public async Task<Entry> AddBalanceAsync(Guid userId, Guid id, decimal amount)
     {
         await _unitOfWork.BeginTransactionAsync();
         try
@@ -69,8 +78,13 @@ public class AccountsService : IAccountsService
             {
                 throw new AccountNotFoundException(id);
             }
+            
+            if (account.OwnerId != userId)
+            {
+                throw new AccountNotOwnedException(userId, id);
+            }
 
-            if (account.Balance <= decimal.Zero)
+            if (account.Balance < 0)
             {
                 throw new InsufficientBalanceException(account.Id, amount);
             }

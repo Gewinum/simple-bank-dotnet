@@ -22,12 +22,12 @@ public class TransfersService : ITransfersService
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<TransferResult> TransferAsync(Guid fromAccountId, Guid toAccountId, decimal amount)
+    public async Task<TransferResult> TransferAsync(Guid userId, Guid fromAccountId, Guid toAccountId, decimal amount)
     {
         await _unitOfWork.BeginTransactionAsync();
         try
         {
-            var result = await TransferInternalAsync(fromAccountId, toAccountId, amount);
+            var result = await TransferInternalAsync(userId, fromAccountId, toAccountId, amount);
             await _unitOfWork.CommitTransactionAsync();
             return result;
         }
@@ -38,7 +38,7 @@ public class TransfersService : ITransfersService
         }
     }
 
-    private async Task<TransferResult> TransferInternalAsync(Guid fromAccountId, Guid toAccountId, decimal amount)
+    private async Task<TransferResult> TransferInternalAsync(Guid userId, Guid fromAccountId, Guid toAccountId, decimal amount)
     {
         var reverseOrder = fromAccountId.CompareTo(toAccountId) > 0;
         
@@ -54,6 +54,11 @@ public class TransfersService : ITransfersService
         {
             fromAccount = await _accountsRepository.GetWithLockAsync(fromAccountId) ?? throw new AccountNotFoundException(fromAccountId);
             toAccount = await _accountsRepository.GetWithLockAsync(toAccountId) ?? throw new AccountNotFoundException(toAccountId);
+        }
+        
+        if (fromAccount.OwnerId != userId)
+        {
+            throw new AccountNotOwnedException(userId, fromAccountId);
         }
         
         if (fromAccount.Balance < amount)

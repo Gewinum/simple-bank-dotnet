@@ -4,17 +4,17 @@ namespace Simplebank.Application.Exceptions.Accounts;
 
 public class AccountAlreadyExistsException : Exception, IIdentifiableException
 {
-    public AccountAlreadyExistsException(string owner, string currency)
+    public AccountAlreadyExistsException(Guid ownerId, string currency)
     {
-        Owner = owner;
+        OwnerId = ownerId;
         Currency = currency;
     }
 
-    public string Owner { get; }
+    public Guid OwnerId { get; }
     
     public string Currency { get; }
     
-    public override string Message => $"Account with owner {Owner} and currency {Currency} already exists";
+    public override string Message => $"Account with owner {OwnerId.ToString()} and currency {Currency} already exists";
     
     public string ErrorType => "AccountAlreadyExists";
 }

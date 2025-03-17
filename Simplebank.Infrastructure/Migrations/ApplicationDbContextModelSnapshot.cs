@@ -39,17 +39,16 @@ namespace Simplebank.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<string>("Owner")
-                        .IsRequired()
+                    b.Property<Guid>("OwnerId")
                         .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Owner", "Currency")
+                    b.HasIndex("OwnerId", "Currency")
                         .IsUnique()
                         .HasDatabaseName("IX_Accounts_Owner_Currency");
 
@@ -108,6 +107,51 @@ namespace Simplebank.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Transfers");
+                });
+
+            modelBuilder.Entity("Simplebank.Domain.Database.Models.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Users_Email");
+
+                    b.HasIndex("Login")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Users_Login");
+
+                    b.ToTable("Users");
                 });
 #pragma warning restore 612, 618
         }

@@ -7,6 +7,7 @@
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__Default: "Server=bank-mssql;Database=simplebank;User=sa;Password=${MSSQL_SA_PASSWORD:-Password123};TrustServerCertificate=true"
+      Tokens__PrivateKey: "my-super-secret-private-key12345"
     ports:
       - "8080:8080"
     networks:

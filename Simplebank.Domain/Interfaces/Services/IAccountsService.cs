@@ -4,9 +4,11 @@ namespace Simplebank.Domain.Interfaces.Services;
 
 public interface IAccountsService
 {
-    Task<Account> GetAccountAsync(Guid id);
+    Task<Account> GetAccountAsync(Guid userId, Guid id);
     
-    Task<Account?> CreateAccountAsync(string owner, string currency);
+    Task<IEnumerable<Account>> GetAccountsAsync(Guid userId);
     
-    Task<Entry> AddBalanceAsync(Guid id, decimal amount);
+    Task<Account?> CreateAccountAsync(Guid ownerId, string currency);
+    
+    Task<Entry> AddBalanceAsync(Guid userId, Guid id, decimal amount);
 }
