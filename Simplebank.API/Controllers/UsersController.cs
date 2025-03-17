@@ -1,7 +1,5 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Simplebank.API.Authorization;
 using Simplebank.API.Exceptions;
 using Simplebank.API.Requests.Users;
 using Simplebank.Application.Exceptions.Users;

@@ -1,8 +1,7 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.Extensions.Options;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Options;
 using Simplebank.Domain.Interfaces.Providers;
 
 namespace Simplebank.API.Authorization;

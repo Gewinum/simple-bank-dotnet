@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using Simplebank.Domain.Attributes;
 
 namespace Simplebank.API.Requests.Accounts;

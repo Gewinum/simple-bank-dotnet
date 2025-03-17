@@ -1,10 +1,6 @@
 using System.Text;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using NaCl.Core;
-using Org.BouncyCastle.Utilities;
-using Paseto.Cryptography;
 using Simplebank.API.Authorization;
 using Simplebank.Application.Mapping;
 using Simplebank.Application.Providers;
@@ -13,7 +9,6 @@ using Simplebank.Domain.Interfaces.Database;
 using Simplebank.Domain.Interfaces.Providers;
 using Simplebank.Domain.Interfaces.Repositories;
 using Simplebank.Domain.Interfaces.Services;
-using Simplebank.Domain.Models.Users;
 using Simplebank.Infrastructure.Database;
 using Simplebank.Infrastructure.Repositories;
 

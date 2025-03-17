@@ -1,15 +1,10 @@
-using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Simplebank.API.Authorization;
 using Simplebank.API.Exceptions;
 using Simplebank.API.Requests.Accounts;
 using Simplebank.Application.Exceptions.Accounts;
-using Simplebank.Domain.Interfaces.Exceptions;
-using Simplebank.Domain.Interfaces.Repositories;
 using Simplebank.Domain.Interfaces.Services;
-using Simplebank.Domain.Models.Users;
 
 namespace Simplebank.API.Controllers;
 
