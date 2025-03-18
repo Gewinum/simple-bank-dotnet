@@ -1,4 +1,5 @@
 using Simplebank.Application.Exceptions.Accounts;
+using Simplebank.Application.Exceptions.Transfers;
 using Simplebank.Domain.Database.Models;
 using Simplebank.Domain.Interfaces.Database;
 using Simplebank.Domain.Interfaces.Repositories;
@@ -59,6 +60,16 @@ public class TransfersService : ITransfersService
         if (fromAccount.OwnerId != userId)
         {
             throw new AccountNotOwnedException(userId, fromAccountId);
+        }
+        
+        if (fromAccount.Currency != toAccount.Currency)
+        {
+            throw new DifferentCurrencyAccountsException(fromAccount.Currency, toAccount.Currency);
+        }
+
+        if (fromAccount.Id == toAccount.Id)
+        {
+            throw new SameAccountTransferException();
         }
         
         if (fromAccount.Balance < amount)

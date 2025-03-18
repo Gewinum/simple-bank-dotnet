@@ -4,6 +4,7 @@ using Simplebank.API.Authorization;
 using Simplebank.API.Exceptions;
 using Simplebank.API.Requests.Transfers;
 using Simplebank.Application.Exceptions.Accounts;
+using Simplebank.Application.Exceptions.Transfers;
 using Simplebank.Domain.Interfaces.Services;
 
 namespace Simplebank.API.Controllers;
@@ -20,7 +21,8 @@ public class TransfersController : ControllerBase
         try
         {
             var result =
-                await transfersService.TransferAsync(tokenInfo.UserId, request.FromAccount, request.ToAccount, request.Amount);
+                await transfersService.TransferAsync(tokenInfo.UserId, request.FromAccount, request.ToAccount,
+                    request.Amount);
             return Ok(result);
         }
         catch (InsufficientBalanceException e)
@@ -34,6 +36,14 @@ public class TransfersController : ControllerBase
         catch (AccountNotOwnedException e)
         {
             return StatusCode(StatusCodes.Status403Forbidden, ExceptionHandler.HandleException(e));
+        }
+        catch (DifferentCurrencyAccountsException e)
+        {
+            return BadRequest(ExceptionHandler.HandleException(e));
+        }
+        catch (SameAccountTransferException e)
+        {
+            return BadRequest(ExceptionHandler.HandleException(e));
         }
     }
 }

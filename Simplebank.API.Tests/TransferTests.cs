@@ -168,6 +168,61 @@ public class TransferTests
         Assert.Equal(10000, updatedFromAccount.Balance);
         Assert.Equal(10000, updatedToAccount.Balance);
     }
+
+    [Fact]
+    public async Task TestDifferentCurrencyTransfer()
+    {
+        var client = _factory.CreateClient();
+
+        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
+        
+        var client1 = _factory.CreateClient();
+        client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
+        var client2 = _factory.CreateClient();
+        client2.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
+        
+        var accountFrom = await client1.CreateAccountAsync("USD");
+        var accountTo = await client2.CreateAccountAsync("EUR");
+
+        await AddBalance(client1, accountFrom.Id, 1000);
+        await AddBalance(client2, accountTo.Id, 1000);
+        
+        var transferRequest = new TransferRequest
+        {
+            FromAccount = accountFrom.Id,
+            ToAccount = accountTo.Id,
+            Amount = 100
+        };
+        
+        var transferResponse = await client1.PostAsJsonAsync("/transfers", transferRequest);
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, transferResponse.StatusCode);
+    }
+
+    [Fact]
+    public async Task TestSameAccountTransfer()
+    {
+        var client = _factory.CreateClient();
+
+        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        
+        var client1 = _factory.CreateClient();
+        client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
+        
+        var accountFrom = await client1.CreateAccountAsync("USD");
+
+        await AddBalance(client1, accountFrom.Id, 1000);
+        
+        var transferRequest = new TransferRequest
+        {
+            FromAccount = accountFrom.Id,
+            ToAccount = accountFrom.Id,
+            Amount = 100
+        };
+        
+        var transferResponse = await client1.PostAsJsonAsync("/transfers", transferRequest);
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, transferResponse.StatusCode);
+    }
     
     private async Task<TransferResult> ExecuteTransferAndCheck(HttpClient client, Guid fromAccount, Guid toAccount, decimal amount)
     {
