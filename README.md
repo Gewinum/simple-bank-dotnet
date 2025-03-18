@@ -1,6 +1,12 @@
 # Simplebank Application
 
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
+![.NET 9](https://img.shields.io/badge/.NET-9.0-purple.svg)
+![Architecture: DDD](https://img.shields.io/badge/Architecture-DDD-blue.svg)
+![Status: Personal Project](https://img.shields.io/badge/Status-Personal_Project-orange.svg)
+
 ## Overview
+
 Simplebank is a personal project aimed at gaining experience in building a banking application. It provides functionalities such as account management, user management, and transaction processing. The application is built using C# and leverages ASP.NET Core for the API and Entity Framework Core for database interactions. **Note: This application is not intended for actual banking use.**
 
 ## Architecture
@@ -11,6 +17,35 @@ This application follows **Domain-Driven Design (DDD)** principles with a clear 
 - **Application Layer**: Implements application services that coordinate between the domain and infrastructure layers
 - **Infrastructure Layer**: Handles data persistence, external services integration, and implements repositories
 - **Presentation Layer**: API controllers that handle HTTP requests and translate them to application services calls
+
+### SOLID Principles Implementation
+
+The application adheres to SOLID principles:
+
+#### Single Responsibility Principle
+- Each class has a clearly defined purpose (e.g., `TransfersController` handles HTTP requests, `TransfersService` manages business logic)
+- Clear separation of responsibilities across layers (domain logic, data access, API handling)
+- Specialized repositories for different domain entities (Accounts, Users, Entries)
+
+#### Open/Closed Principle
+- Extensive use of interfaces (`IAccountsService`, `ITransfersRepository`) allowing new implementations without modifying existing code
+- Repository pattern implementation enables extending functionality without changing core logic
+- Exception hierarchy is designed for extension
+
+#### Liskov Substitution Principle
+- Repository implementations properly extend the base `Repository<T>` class
+- Well-structured exception hierarchy with domain-specific exceptions
+- Service implementations can be substituted with different implementations that adhere to the same interface
+
+#### Interface Segregation Principle
+- Focused interfaces like `ITransfersRepository` and `IAccountsRepository` with specific, cohesive methods
+- Services expose only the methods that clients need, preventing unnecessary dependencies
+- Controllers only depend on the service methods they require
+
+#### Dependency Inversion Principle
+- Consistent dependency injection throughout the application
+- High-level modules (controllers, services) depend on abstractions, not concrete implementations
+- The `IUnitOfWork` pattern for managing transactions demonstrates proper abstraction
 
 ## Key Features
 
@@ -28,6 +63,7 @@ This application follows **Domain-Driven Design (DDD)** principles with a clear 
 - **Input Validation**: Comprehensive request validation to prevent malicious inputs
 
 ## Prerequisites
+
 - [.NET 9 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
 - [Docker](https://www.docker.com/get-started)
 - [Docker Compose](https://docs.docker.com/compose/install/)
@@ -83,6 +119,7 @@ The database includes the following main entities:
 - **Transfers**: Records transfers between accounts
 
 ## Makefile Commands
+
 The `Makefile` provides several commands to manage database migrations:
 
 - **Add a new migration**:
@@ -105,9 +142,6 @@ The `Makefile` provides several commands to manage database migrations:
   make dropdb
   ```
 
-## Postman Files
-You can find the Postman collection and environment files in the `./Postman` directory. For detailed instructions on how to import and use these files, refer to the [Postman Documentation](./Postman/postman.md).
-
 ## Testing
 
 The application includes comprehensive tests:
@@ -116,8 +150,14 @@ The application includes comprehensive tests:
 - **API Tests**: End-to-end testing of API endpoints
 - **Concurrency Tests**: Testing behavior under concurrent operations
 
+## Postman Files
+
+You can find the Postman collection and environment files in the `./Postman` directory. For detailed instructions on how to import and use these files, refer to the [Postman Documentation](./Postman/postman.md).
+
 ## Contributing
+
 Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## License
+
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
