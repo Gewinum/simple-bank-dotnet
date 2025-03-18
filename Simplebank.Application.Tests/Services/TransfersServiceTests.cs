@@ -15,6 +15,7 @@ public class TransfersServiceTests
         // Arrange
         var sourceAccount = DataGenerator.RandomAccount(Guid.NewGuid(), "USD");
         var targetAccount = DataGenerator.RandomAccount(Guid.NewGuid(), "USD");
+        sourceAccount.Balance += 100;
         var transfersRepositoryMock = new Mock<ITransfersRepository>();
         var accountsRepositoryMock = new Mock<IAccountsRepository>();
         var entriesRepositoryMock = new Mock<IEntriesRepository>();
