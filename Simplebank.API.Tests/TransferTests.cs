@@ -52,6 +52,36 @@ public class TransferTests
         Assert.Equal(accountTo.Id, transferResult.ToEntry.AccountId);
         Assert.Equal(100, transferResult.ToEntry.Amount);
     }
+
+    [Fact]
+    public async Task TestTransferNegativeSum()
+    {
+        var client = _factory.CreateClient();
+        
+        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
+        
+        var client1 = _factory.CreateClient();
+        client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
+        var client2 = _factory.CreateClient();
+        client2.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
+        
+        var accountFrom = await client1.CreateAccountAsync("USD");
+        var accountTo = await client2.CreateAccountAsync("USD");
+
+        await AddBalance(client1, accountFrom.Id, 1000);
+        await AddBalance(client2, accountTo.Id, 1000);
+        
+        var transferRequest = new TransferRequest
+        {
+            FromAccount = accountFrom.Id,
+            ToAccount = accountTo.Id,
+            Amount = -100
+        };
+        
+        var transferResponse = await client1.PostAsJsonAsync("/transfers", transferRequest);
+        Assert.Equal(System.Net.HttpStatusCode.BadRequest, transferResponse.StatusCode);
+    }
     
     [Fact]
     public async Task TestTransferSourceAccountNotFound()
