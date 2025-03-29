@@ -22,8 +22,8 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
-        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenTo) = await client.CreateRandomUserAndTokenAsync();
         
         var client1 = _factory.CreateClient();
         client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
@@ -58,8 +58,8 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
-        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenTo) = await client.CreateRandomUserAndTokenAsync();
         
         var client1 = _factory.CreateClient();
         client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
@@ -88,7 +88,7 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenTo) = await client.CreateRandomUserAndTokenAsync();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenTo}");
         var accountTo = await client.CreateAccountAsync("USD");
         
@@ -110,7 +110,7 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
         client.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
         var accountFrom = await client.CreateAccountAsync("USD");
         
@@ -132,8 +132,8 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
         
-        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
-        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenTo) = await client.CreateRandomUserAndTokenAsync();
         
         var client1 = _factory.CreateClient();
         client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
@@ -162,8 +162,8 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
 
-        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
-        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenTo) = await client.CreateRandomUserAndTokenAsync();
         
         var client1 = _factory.CreateClient();
         client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
@@ -204,8 +204,8 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
 
-        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
-        var (userTo, tokenTo) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenTo) = await client.CreateRandomUserAndTokenAsync();
         
         var client1 = _factory.CreateClient();
         client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
@@ -234,7 +234,7 @@ public class TransferTests
     {
         var client = _factory.CreateClient();
 
-        var (userFrom, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
+        var (_, tokenFrom) = await client.CreateRandomUserAndTokenAsync();
         
         var client1 = _factory.CreateClient();
         client1.DefaultRequestHeaders.Add("Authorization", $"Bearer {tokenFrom}");
@@ -286,7 +286,7 @@ public class TransferTests
         return transferResult;
     }
     
-    private async Task<Account> GetAccount(HttpClient client, Guid accountId)
+    private static async Task<Account> GetAccount(HttpClient client, Guid accountId)
     {
         var response = await client.GetAsync($"/accounts/{accountId}");
         response.EnsureSuccessStatusCode();

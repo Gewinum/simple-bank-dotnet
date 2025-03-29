@@ -65,7 +65,7 @@ public class EntriesRepositoryTest
         Assert.Empty(resultList);
     }
     
-    private ApplicationDbContext InstantiateContext()
+    private static ApplicationDbContext InstantiateContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: "TestCase")
@@ -86,7 +86,7 @@ public class EntriesRepositoryTest
         };
     }
 
-    private string RandomString(int length)
+    private static string RandomString(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         return new string(Enumerable.Repeat(chars, length)

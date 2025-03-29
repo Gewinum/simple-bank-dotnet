@@ -94,7 +94,7 @@ public class AccountsService : IAccountsService
             });
             if (entry == null)
             {
-                throw new Exception("Unexpectedly failed to add entry");
+                throw new InvalidOperationException("Unexpectedly failed to add entry");
             }
             await _unitOfWork.CommitTransactionAsync();
             return entry;

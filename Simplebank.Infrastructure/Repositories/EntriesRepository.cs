@@ -11,12 +11,12 @@ public class EntriesRepository : Repository<Entry>, IEntriesRepository
     {
     }
 
-    public async Task<IEnumerable<Entry>> GetEntriesAsync(Guid accountId, int page, int perpage)
+    public async Task<IEnumerable<Entry>> GetEntriesAsync(Guid accountId, int page, int perPage)
     {
         return await dbSet.Where(a => a.AccountId == accountId)
             .OrderByDescending(a => a.CreatedAt)
-            .Skip((page - 1) * perpage)
-            .Take(perpage)
+            .Skip((page - 1) * perPage)
+            .Take(perPage)
             .ToListAsync();
     }
 }

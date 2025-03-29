@@ -88,21 +88,21 @@ public class TransfersService : ITransfersService
             FromAccountId = fromAccountId,
             ToAccountId = toAccountId,
             Amount = amount
-        }) ?? throw new Exception("Failed to create transfer");
+        }) ?? throw new InvalidOperationException("Failed to create transfer");
         
         var fromEntry = await _entriesRepository.AddAsync(new Entry
         {
             AccountId = fromAccountId,
             Amount = -amount,
             Description = "Transfer ID " + transaction.Id
-        }) ?? throw new Exception("Failed to create from entry");
+        }) ?? throw new InvalidOperationException("Failed to create from entry");
         
         var toEntry = await _entriesRepository.AddAsync(new Entry
         {
             AccountId = toAccountId,
             Amount = amount,
             Description = "Transfer ID " + transaction.Id
-        }) ?? throw new Exception("Failed to create to entry");
+        }) ?? throw new InvalidOperationException("Failed to create to entry");
         
         return new TransferResult
         {

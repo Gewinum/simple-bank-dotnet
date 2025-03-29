@@ -63,7 +63,7 @@ public class AccountsRepositoryTest
         Assert.Equal(account.Balance, result.Balance);
     }
     
-    private ApplicationDbContext InstantiateContext()
+    private static ApplicationDbContext InstantiateContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase(databaseName: "TestCase")
@@ -81,12 +81,5 @@ public class AccountsRepositoryTest
             Currency = randomCurrency,
             Balance = new Random().Next(0, 1000)
         };
-    }
-
-    private string RandomString(int length)
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        return new string(Enumerable.Repeat(chars, length)
-            .Select(s => s[new Random().Next(s.Length)]).ToArray());
     }
 }

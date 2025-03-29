@@ -26,7 +26,7 @@ public class EntriesService : IEntriesService
         
         if (account.OwnerId != userId)
         {
-            throw new AccountNotOwnedException(userId, accountId);
+            throw new AccountNotOwnedException(accountId, userId);
         }
         
         return await _entriesRepository.GetEntriesAsync(accountId, page, perPage);

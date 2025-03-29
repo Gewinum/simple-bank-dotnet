@@ -3,6 +3,7 @@ using Simplebank.Domain.Constants;
 
 namespace Simplebank.Domain.Attributes;
 
+[AttributeUsage(AttributeTargets.Property)]
 public class CurrencyAttribute : ValidationAttribute
 {
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)

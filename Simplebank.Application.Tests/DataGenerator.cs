@@ -2,7 +2,7 @@ using Simplebank.Domain.Database.Models;
 
 namespace Simplebank.Application.Tests;
 
-public class DataGenerator
+public static class DataGenerator
 {
     public static string RandomString(string prefix) => $"prefix-{Guid.NewGuid()}";
     
